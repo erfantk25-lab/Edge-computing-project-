@@ -18,12 +18,12 @@ def alarm(on):
 def beep(times=10):
     for i in range(times):
         alarm(1)
-        time.sleep(0.1)
+        sleep(0.1)
         alarm(0)
-        time.sleep(0.1)
+        sleep(0.1)
 
 alarm(0) # shutdown after loop is done
-time.sleep(1)  # give the sensor time to start
+sleep(1)  # give the sensor time to start
 
 # Read temp/humidity and trigger the alarm if either is out of range.
 while True:
@@ -41,4 +41,4 @@ while True:
         print("Kunde inte läsa sensorn")
         alarm(0)
 
-    time.sleep(2)
+    sleep(2)
