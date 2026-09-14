@@ -1,6 +1,9 @@
 from machine import Pin
 from dht import DHT11
 from time import sleep
+from umqtt.robust import MQTTClient
+
+MQTT_BROKER = "" # TODO: Add the WIfi-hotspot IP-adress here
 
 TEMP_MAX = 20   # C
 HUM_MAX = 10    # %
@@ -21,6 +24,14 @@ def beep(times=10):
         sleep(0.1)
         alarm(0)
         sleep(0.1)
+
+def connect_mqtt():
+    client = MQTTClient(client_id="pico", server=MQTT_BROKER, port=1883)
+    client.connect()
+    print("Connected to MQTT")
+    return client
+
+client = connect_mqtt()
 
 alarm(0) # shutdown after loop is done
 sleep(1)  # give the sensor time to start
