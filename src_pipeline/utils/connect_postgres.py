@@ -12,10 +12,13 @@ HOST = os.getenv("DB_HOST", "localhost")
 DB_CONFIG = f"dbname={POSTGRES_DB} user={POSTGRES_USER} password={POSTGRES_PASSWORD} host={HOST}"
 
 def query_db(sql: str, parameters: tuple=None):
-    """
-    Executes a SQL query and returns the result rows, or None.
-    """
-    with psycopg2.connect(DB_CONFIG) as conn:
-        with conn.cursor() as cur:
-            cur.execute(sql, parameters)
-            return cur.fetchall() if cur.description else None
+    """ Executes a SQL query and returns the result rows, or None. """
+    
+    conn = psycopg2.connect(DB_CONFIG)
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(sql, parameters)
+                return cur.fetchall() if cur.description else None
+    finally:
+        conn.close()
