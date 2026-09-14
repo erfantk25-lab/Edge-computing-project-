@@ -3,7 +3,7 @@ from dht import DHT11
 from time import sleep
 from umqtt.robust import MQTTClient
 
-MQTT_BROKER = "" # TODO: Add the WIfi-hotspot IP-adress here
+MQTT_BROKER = "" # TODO: Add the wifi-hotspot IP-address here
 
 TEMP_MAX = 20   # C
 HUM_MAX = 10    # %
@@ -26,10 +26,15 @@ def beep(times=10):
         sleep(0.1)
 
 def connect_mqtt():
-    client = MQTTClient(client_id="pico", server=MQTT_BROKER, port=1883)
-    client.connect()
-    print("Connected to MQTT")
-    return client
+    while True:
+        try:
+            client = MQTTClient(client_id="pico", server=MQTT_BROKER, port=1883)
+            client.connect()
+            print("Connected to MQTT")
+            return client
+        except OSError as e:
+            print("MQTT connection failed, retrying in 5s:", e)
+            sleep(5)
 
 client = connect_mqtt()
 
