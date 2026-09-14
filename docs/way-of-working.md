@@ -187,6 +187,7 @@ At least **one other team member** should review the Pull Request before it is m
 
 During code review, we check:
 
+* Local verification: Check out the branch locally (gh pr checkout <PR#> or git checkout <branch>), run the code, and verify that it functions as expected.
 * Does the solution work?
 * Is the code easy to understand?
 * Does the code follow the project structure?
