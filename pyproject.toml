@@ -1,0 +1,9 @@
+[project]
+name = "edge-computing-project"
+version = "0.1.0"
+description = "Smart Grow: IoT edge telemetry pipeline for real-time plant temperature and environmental monitoring"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+[tool.uv]
+package = false
