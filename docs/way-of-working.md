@@ -88,35 +88,15 @@ We help each other when necessary and avoid creating situations where only one p
 
 ## 5. GitHub and Branching Strategy
 
-We do not normally work directly on the `main` branch.
+We do not work directly on the main branch. It contains the stable version of the project and is protected against direct pushes. All changes must go through a Pull Request.
 
-The `main` branch contains the stable version of the project.
+Always branch off using descriptive names:
 
-For new functionality, we use feature branches:
+- Features: feature/<name> (e.g., feature/mqtt, feature/sensors)
 
-```text
-feature/pico-sensors
-feature/mqtt
-feature/consumer
-feature/database
-feature/grafana
-feature/wokwi
-feature/lcd
-```
+- Bug fixes: fix/<name> (e.g., fix/mqtt-reconnect)
 
-For documentation, we use branches such as:
-
-```text
-docs/readme
-docs/way-of-working
-```
-
-For bug fixes, we use branches such as:
-
-```text
-fix/mqtt-reconnect
-fix/sensor-reading
-```
+- Documentation: docs/<name> (e.g., docs/readme)
 
 Branch names should clearly describe what is being developed or changed.
 
