@@ -2,8 +2,10 @@ from machine import Pin
 from dht import DHT11
 from time import sleep
 from umqtt.robust import MQTTClient
+import json
 
 MQTT_BROKER = "" # TODO: Add the wifi-hotspot IP-address here
+TOPIC = b"home/pico/dht11"
 
 TEMP_MAX = 20   # C
 HUM_MAX = 10    # %
@@ -49,6 +51,10 @@ while True:
         temp = dht_sensor.temperature()
         hum = dht_sensor.humidity()
         print("Temp:", temp, "°C  Fukt:", hum, "%")
+
+        # Send temperature and humidity data to MQTT-broker
+        payload = json.dumps({"temperature": temp, "humidity": hum})
+        client.publish(TOPIC, payload)
 
         if temp > TEMP_MAX or hum > HUM_MAX:
             print("LARM!! VÄXTERNA DÖR!!")
