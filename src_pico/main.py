@@ -2,17 +2,19 @@ from machine import Pin
 from dht import DHT11
 from time import sleep
 
-TEMP_MAX = 20   # C
-HUM_MAX = 10    # %
+TEMP_MAX = 30  # C
+HUM_MAX = 60  # %
 
 dht_sensor = DHT11(Pin(16))
 led = Pin(15, Pin.OUT)
 buzzer = Pin(14, Pin.OUT)
 
+
 # alarm
 def alarm(on):
     led.value(on)
     buzzer.value(on)
+
 
 # will beep for 10 times
 def beep(times=10):
@@ -22,7 +24,8 @@ def beep(times=10):
         alarm(0)
         sleep(0.1)
 
-alarm(0) # shutdown after loop is done
+
+alarm(0)  # shutdown after loop is done
 sleep(1)  # give the sensor time to start
 
 # Read temp/humidity and trigger the alarm if either is out of range.
