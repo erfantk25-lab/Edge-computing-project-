@@ -1,45 +1,98 @@
 # Way of Working
 
-## 1. Purpose
+## 1. Goals
 
-The purpose of this document is to define how our team collaborates during the PiCo Edge Computing project. It describes how we use GitHub, how we manage branches, commits and pull requests, and how we communicate and review each other's work.
+The goal of our way of working is to:
 
-Our goal is to work in an organized way where all team members contribute to the project and understand the code, hardware and documentation.
+* Develop the project towards a VG-level result
+* Work in a structured and agile way
+* Ensure that all team members actively contribute
+* Share knowledge so that everyone understands the important parts of the project
+* Deliver a functional and well-documented product
 
----
-
-## 2. GitHub Repository
-
-All project code, documentation and configuration files are stored in our shared GitHub repository.
-
-The repository is organized into different folders for the different parts of the project.
-
-Example:
-
-```text
-pico-edge-monitor/
-│
-├── pico/
-├── consumer/
-├── database/
-├── grafana/
-├── wokwi/
-├── hardware/
-├── docs/
-└── README.md
-```
-
-The `main` branch contains the stable version of the project.
+We focus on both **collaboration and learning**. No team member should only understand their own part of the project. Everyone should understand how their work connects to the overall system.
 
 ---
 
-## 3. Branching Strategy
+## 2. Working Hours
+
+### Core Hours
+
+All team members are expected to be available on weekdays between:
+
+**10:00–15:00**
+
+During the core hours, team members should be available for:
+
+* Stand-up meetings
+* Short meetings
+* Problem solving
+* Code reviews
+* Collaborative work
+
+Outside the core hours, everyone works flexibly according to their needs and agreements within the group.
+
+---
+
+## 3. Communication
+
+### Daily Stand-up – 10:00
+
+We have a short digital stand-up every working day.
+
+Each team member answers:
+
+1. What did I complete since the last meeting?
+2. What am I working on today?
+3. Do I have any blockers or need help?
+
+**Time limit: 15 minutes.**
+
+The stand-up should be short and focused. Longer technical discussions are handled separately after the meeting.
+
+### Ongoing Communication
+
+* Discord is used for quick communication during the day.
+* GitHub Issues are used for tasks, problems and technical discussions.
+* GitHub Pull Requests are used for code reviews and discussions about code.
+* Larger technical questions are discussed in a short meeting when needed.
+
+### End-of-Day Check-in – 14:45
+
+We have a short check-in to discuss:
+
+* What was completed today?
+* What remains to be done?
+* Are there any blockers for the next working day?
+
+---
+
+## 4. Division of Work
+
+We work in parallel on different parts of the project, for example:
+
+* Raspberry Pi Pico and MicroPython
+* Sensors and hardware
+* MQTT and Mosquitto
+* Python consumer
+* TimescaleDB
+* Grafana
+* Wokwi
+* Documentation
+
+Each task should have a responsible team member, but the implementation should be documented well enough for another team member to understand and take over when needed.
+
+We help each other when necessary and avoid creating situations where only one person understands an important part of the system.
+
+---
+
+## 5. GitHub and Branching Strategy
 
 We do not normally work directly on the `main` branch.
 
-Each feature or task should be developed in its own branch.
+The `main` branch contains the stable version of the project.
 
-Examples:
+For new functionality, we use feature branches:
 
 ```text
 feature/pico-sensors
@@ -49,38 +102,35 @@ feature/database
 feature/grafana
 feature/wokwi
 feature/lcd
-feature/azure
-docs/way-of-working
+```
+
+For documentation, we use branches such as:
+
+```text
 docs/readme
+docs/way-of-working
+```
+
+For bug fixes, we use branches such as:
+
+```text
+fix/mqtt-reconnect
+fix/sensor-reading
 ```
 
 Branch names should clearly describe what is being developed or changed.
 
-For example:
-
-```text
-feature/mqtt
-```
-
-is used for MQTT-related development, while:
-
-```text
-docs/way-of-working
-```
-
-is used for documentation related to the way of working.
-
 ---
 
-## 4. Issues
+## 6. GitHub Issues
 
-We use GitHub Issues to plan and track work.
+Larger tasks and problems are documented as GitHub Issues.
 
-Each larger task should have an Issue describing:
+An Issue should contain:
 
 * What needs to be done
 * Why it needs to be done
-* What should be considered finished
+* What is required for the task to be considered complete
 
 Example:
 
@@ -91,61 +141,16 @@ Tasks:
 - Connect Pico W to Wi-Fi
 - Connect Pico W to Mosquitto
 - Publish sensor data
-- Test MQTT messages
+- Test MQTT communication
 ```
 
-Issues are added to our GitHub Project so that the team can track progress.
-
----
-
-## 5. GitHub Project
-
-We use GitHub Projects to organize our work according to an agile workflow.
-
-Our workflow is:
-
-```text
-Backlog → Todo → In Progress → Review → Done
-```
-
-Issues are moved between these stages as work progresses.
-
-This gives the team an overview of what needs to be done, what is currently being worked on and what has been completed.
-
----
-
-## 6. Commits
-
-We make small and meaningful commits instead of putting many unrelated changes into one commit.
-
-Commit messages should describe what was changed.
-
-We use prefixes such as:
-
-```text
-feat: add BME280 sensor
-fix: handle MQTT reconnect
-docs: add way of working
-test: add sensor validation
-refactor: improve MQTT client
-```
-
-Examples:
-
-```text
-feat: add temperature sensor
-feat: publish sensor data using MQTT
-fix: handle Wi-Fi reconnect
-docs: update README
-```
-
-Commits should be made regularly so that the development history is easy to understand.
+Issues are used together with our GitHub Project to track project progress.
 
 ---
 
 ## 7. Pull Requests
 
-Changes should be merged into `main` through Pull Requests.
+All code that is merged into `main` should go through a Pull Request.
 
 The normal workflow is:
 
@@ -167,184 +172,159 @@ Code Review
 Merge
 ```
 
-A Pull Request should contain:
+Each Pull Request should:
 
-* A clear title
-* A short description of the changes
-* The related Issue when possible
-* Any relevant screenshots or test information
+* Have a clear title
+* Describe what has been changed
+* Be linked to the relevant Issue when possible
+* Be as small and focused as possible
 
-Example:
-
-```text
-Title:
-Add MQTT communication
-
-Description:
-Implemented Wi-Fi and MQTT communication for the Raspberry Pi Pico W.
-The Pico can now publish sensor data to the Mosquitto broker.
-```
+At least **one other team member** should review the Pull Request before it is merged into `main`.
 
 ---
 
 ## 8. Code Review
 
-At least one other team member should review a Pull Request before it is merged into `main`.
+During code review, we check:
 
-The reviewer checks:
+* Does the solution work?
+* Is the code easy to understand?
+* Does the code follow the project structure?
+* Is there unnecessary or duplicated code?
+* Has the solution been tested?
+* Does the documentation need to be updated?
 
-* Does the code work?
-* Is the code understandable?
-* Does it follow the project structure?
-* Are there unnecessary changes?
-* Has the functionality been tested?
-* Is documentation needed?
-
-The author should respond to relevant review comments before merging.
+Feedback should be constructive and focus on the code and solution rather than the person.
 
 ---
 
-## 9. Testing
+## 9. Commits
 
-New functionality should be tested before a Pull Request is merged.
+We make small and meaningful commits that describe a specific change.
 
-Testing can include:
-
-* Hardware testing
-* Sensor testing
-* MQTT testing
-* Database testing
-* Grafana testing
-* Wokwi simulation
-* Integration testing
-
-For example, when implementing MQTT, we should verify that:
+We use the following structure:
 
 ```text
-Pico W
-   ↓
-Wi-Fi
-   ↓
-Mosquitto
-   ↓
-Consumer
+feat: new functionality
+fix: bug fix
+docs: documentation
+test: tests
+refactor: code restructuring
 ```
-
-works correctly before considering the task complete.
-
----
-
-## 10. Hardware Changes
-
-Hardware changes should also be documented.
-
-When adding or changing a component, we should update the relevant documentation.
 
 Examples:
 
-* Wiring diagrams
-* BOM
-* README
-* Hardware documentation
+```text
+feat: add BME280 sensor
+feat: publish sensor data using MQTT
+fix: handle MQTT reconnect
+docs: update README
+test: add sensor validation
+```
 
-The team should also test the physical wiring before connecting the system to the complete IoT pipeline.
+Commit messages should be short but clear.
 
 ---
 
-## 11. Documentation
+## 10. Testing
 
-Important parts of the project should be documented so that another team member can understand and reproduce the system.
+New functionality should be tested before it is merged into `main`.
 
-Documentation may include:
+Depending on the functionality, testing can include:
+
+* Physical hardware
+* MicroPython
+* Wokwi
+* MQTT testing
+* Database testing
+* Grafana testing
+* Integration testing
+
+We test both individual components and the complete pipeline:
+
+```text
+Pico W
+  ↓
+Mosquitto
+  ↓
+Consumer
+  ↓
+TimescaleDB
+  ↓
+Grafana
+```
+
+---
+
+## 11. Definition of Done
+
+A task is considered complete when:
+
+* The functionality has been implemented
+* The solution has been tested
+* The code is understandable
+* Relevant documentation has been updated
+* The Pull Request has been reviewed
+* Review feedback has been addressed
+* The changes have been merged into `main`
+
+Only then should the task be moved to **Done** in our GitHub Project.
+
+---
+
+## 12. Code Quality
+
+We aim to write code that is:
+
+* Clear
+* Simple
+* Reusable
+* Testable
+* Easy to maintain
+
+We follow the **DRY principle (Don't Repeat Yourself)** and avoid unnecessary duplication of code.
+
+Functions and modules should have clear responsibilities.
+
+---
+
+## 13. Documentation
+
+Important parts of the project should be documented continuously.
+
+This includes, for example:
 
 * README
 * Architecture diagrams
 * Wiring diagrams
-* Setup instructions
-* Database structure
 * MQTT topics
-* Grafana configuration
+* Database structure
+* Installation instructions
 * Wokwi simulation
-* Hardware information
+* Grafana dashboard
+* Hardware components and BOM
 
-Documentation should be updated when the implementation changes significantly.
-
----
-
-## 12. Communication
-
-The team communicates regularly about project progress.
-
-During meetings or short check-ins, each member should be able to explain:
-
-1. What I completed
-2. What I am working on
-3. What problems or blockers I have
-
-If a team member gets blocked, the issue should be communicated to the group rather than waiting until the end of the project.
+Documentation should be updated when the project implementation changes significantly.
 
 ---
 
-## 13. Division of Work
+## 14. AI and LLM Usage
 
-Tasks are divided between team members, but important parts of the system should be understood by more than one person.
+LLM tools may be used for:
 
-Possible areas of responsibility include:
+* Ideas and brainstorming
+* Small parts of coding
+* Debugging
+* Explanations
+* Documentation support
 
-* Hardware and sensors
-* Raspberry Pi Pico and MicroPython
-* MQTT and Mosquitto
-* Python consumer
-* TimescaleDB
-* Grafana
-* Wokwi
-* Documentation
+LLMs should not be used to build entire parts of the project without the team understanding the solution.
 
-Team members can help each other when needed.
+All AI-generated code must be reviewed, tested and understood by the team.
 
----
+When LLMs are used for coding, this should be documented according to the course guidelines.
 
-## 14. Definition of Done
-
-A task is considered "Done" when:
-
-* The implementation is completed
-* The functionality has been tested
-* The code/documentation is understandable
-* Relevant documentation has been updated
-* The Pull Request has been reviewed
-* Review comments have been handled
-* The Pull Request has been merged into `main`
-
-An Issue should only be moved to `Done` when these conditions are fulfilled.
-
----
-
-## 15. Code Quality
-
-We aim to keep the code:
-
-* Simple
-* Readable
-* Reusable
-* Structured
-* Easy to maintain
-
-We follow the DRY principle (Don't Repeat Yourself) where appropriate.
-
-Functions should have clear responsibilities, and duplicated code should be avoided when it can reasonably be replaced by reusable functions or modules.
-
----
-
-## 16. AI and LLM Usage
-
-LLMs may be used for small coding tasks, debugging support, explanations and idea generation.
-
-LLMs should not be used to build entire project components without the team's understanding.
-
-When AI-generated code is used, it should be reviewed, tested and understood by the team.
-
-AI-generated code should be marked with a comment when appropriate, for example:
+Example:
 
 ```python
 # LLM-generated:
@@ -356,8 +336,31 @@ The team remains responsible for all code included in the project.
 
 ---
 
-## 17. Goal
+## 15. Collaboration and Knowledge Sharing
 
-Our goal is to develop the project collaboratively and professionally while making sure that every team member contributes to the project and understands the parts they work with.
+All team members should have relevant commits and Pull Requests and actively contribute to the project.
 
-The final system should be reproducible, documented and understandable by all team members.
+We share knowledge by:
+
+* Discussing technical decisions
+* Performing code reviews
+* Helping each other with blockers
+* Documenting important solutions
+* Making sure multiple team members understand the central parts of the project
+
+The goal is for everyone to be able to present and explain the project during the final presentation.
+
+---
+
+## 16. Definition of Success
+
+The project is considered successful when:
+
+* All basic requirements are fulfilled
+* The IoT pipeline works as an integrated system
+* The repository is well structured
+* All team members have contributed
+* The project is well documented
+* We can demonstrate the solution clearly
+* We can explain our technical decisions and the problems we solved
+
