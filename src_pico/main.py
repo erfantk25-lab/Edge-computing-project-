@@ -1,6 +1,6 @@
 from machine import Pin
 from dht import DHT11
-import time
+from time import sleep
 
 TEMP_MAX = 20   # C
 HUM_MAX = 10    # %
