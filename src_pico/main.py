@@ -1,7 +1,7 @@
 from machine import Pin
 from dht import DHT11
 from time import sleep
-from umqtt.robust import MQTTClient
+from umqtt.simple import MQTTClient
 import json
 
 MQTT_BROKER = "" # TODO: Add the wifi-hotspot IP-address here
