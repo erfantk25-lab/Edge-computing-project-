@@ -9,18 +9,21 @@ def on_message(client, userdata, message):
 
     temperature = float(data["temperature"])
     humidity = float(data["humidity"])
-    light = float(data["light"])
+
+    # TODO: Add light sensor data when the light sensor is implemented.
+    # light = float(data["light"])
 
     query_db(
         """
         INSERT INTO sensor_readings
-            (time, temperature, humidity, light)
-        VALUES (NOW(), %s, %s, %s)
+            (time, temperature, humidity)
+        VALUES (NOW(), %s, %s)
         """,
-        (temperature, humidity, light),
+        (temperature, humidity),
     )
 
-    print(temperature, humidity, light)
+    print("Temperature:", temperature)
+    print("Humidity:", humidity)
 
 
 if __name__ == "__main__":
@@ -29,16 +32,17 @@ if __name__ == "__main__":
         CREATE TABLE IF NOT EXISTS sensor_readings (
             time TIMESTAMPTZ NOT NULL,
             temperature DOUBLE PRECISION,
-            humidity DOUBLE PRECISION,
-            light DOUBLE PRECISION
+            humidity DOUBLE PRECISION
         )
         """
     )
 
     client = mqtt.Client()
+
     client.connect("mosquitto", 1883)
 
     client.subscribe("home/pico/dht11")
 
     client.on_message = on_message
+
     client.loop_forever()
