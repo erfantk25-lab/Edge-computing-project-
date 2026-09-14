@@ -31,14 +31,14 @@ while True:
         dht_sensor.measure()
         temp = dht_sensor.temperature()
         hum = dht_sensor.humidity()
-        print("Temp:", temp, "°C  Fukt:", hum, "%")
+        print("Temperature:", temp, "°C  Humidity:", hum, "%")
 
         if temp > TEMP_MAX or hum > HUM_MAX:
-            print("LARM!! VÄXTERNA DÖR!!")
+            print("ALERT: Plant conditions unsafe!")
             beep()
 
     except OSError:
-        print("Kunde inte läsa sensorn")
+        print("Could not read the sensor")
         alarm(0)
 
     sleep(2)
