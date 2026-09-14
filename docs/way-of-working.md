@@ -201,9 +201,7 @@ Feedback should be constructive and focus on the code and solution rather than t
 
 ## 9. Commits
 
-We make small and meaningful commits that describe a specific change.
-
-We use the following structure:
+We write small, atomic commits and follow the Conventional Commits specification:
 
 ```text
 feat: new functionality
