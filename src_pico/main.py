@@ -26,6 +26,7 @@ def beep(times=10):
         sleep(0.1)
 
 def connect_mqtt():
+    """Connect to the MQTT broker, retrying every 5s until it succeeds."""
     while True:
         try:
             client = MQTTClient(client_id="pico", server=MQTT_BROKER, port=1883)
