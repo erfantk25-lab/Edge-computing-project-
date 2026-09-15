@@ -35,5 +35,8 @@ services:
       timeout: 5s
       retries: 10
 
+  # TODO: Set up Grafana dashboard and connect to TimescaleDB
+  # Requires: GF_SECURITY_ADMIN credentials in .env
+
 volumes:
   timescale_data:
