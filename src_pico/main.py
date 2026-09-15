@@ -1,14 +1,22 @@
-from machine import Pin
+from machine import Pin, I2C
 from dht import DHT11
-from time import sleep
+from time import sleep, sleep_ms
 from umqtt.simple import MQTTClient
 import json
+import time
 
 MQTT_BROKER = "" # TODO: Add the wifi-hotspot IP-address here
-TOPIC = b"home/pico/dht11"
+TOPIC_DHT = b"home/pico/dht11"
+TOPIC_LUX = b"home/pico/lux"
 
 TEMP_MAX = 30  # C
 HUM_MAX = 60  # %
+
+ADDR = 0x52
+i2c = I2C(1, scl=Pin(3), sda=Pin(2), freq=400000)
+
+i2c.writeto_mem(ADDR, 0x00, b'\x02')
+sleep_ms(150)
 
 dht_sensor = DHT11(Pin(16))
 led = Pin(15, Pin.OUT)
@@ -28,6 +36,13 @@ def beep(times=10):
         sleep(0.1)
         alarm(0)
         sleep(0.1)
+
+
+def read_lux():
+    data = i2c.readfrom_mem(ADDR, 0x00, 3)
+    raw = data[0] | (data[1] << 8) | (data[2] << 16)
+    return raw * 0.180
+
 
 def connect_mqtt():
     """Connect to the MQTT broker, retrying every 5s until it succeeds."""
@@ -52,10 +67,11 @@ while True:
         dht_sensor.measure()
         temp = dht_sensor.temperature()
         hum = dht_sensor.humidity()
-        print("Temperature:", temp, "°C  Humidity:", hum, "%")
+        lux = read_lux()
+        print("Temperature:", temp, "°C  Humidity:", hum, "% Lux:", round(lux, 1))
 
-        # Send temperature and humidity data to MQTT-broker
-        payload = json.dumps({"temperature": temp, "humidity": hum})
+        # Send temperature, humidity and lux data to MQTT-broker
+        payload = json.dumps({"temperature": temp, "humidity": hum, "lux": round(lux, 1)})
         client.publish(TOPIC, payload)
 
         if temp > TEMP_MAX or hum > HUM_MAX:
