@@ -1,24 +1,30 @@
-from machine import Pin
+from machine import Pin, PWM
 from dht import DHT11
 from time import sleep
 from umqtt.simple import MQTTClient
 import json
 
-MQTT_BROKER = "" # TODO: Add the wifi-hotspot IP-address here
+MQTT_BROKER = "172.20.207.204"
 TOPIC = b"home/pico/dht11"
 
 TEMP_MAX = 30  # C
 HUM_MAX = 60  # %
+BUZZER_FREQ = 4000
 
 dht_sensor = DHT11(Pin(16))
 led = Pin(15, Pin.OUT)
-buzzer = Pin(14, Pin.OUT)
+buzzer = PWM(Pin(14))
+buzzer.duty_u16(0)
 
 
 # alarm
 def alarm(on):
     led.value(on)
-    buzzer.value(on)
+    if on:
+        buzzer.freq(BUZZER_FREQ)
+        buzzer.duty_u16(32768)  # 50 % duty = max volym
+    else:
+        buzzer.duty_u16(0)
 
 
 # will beep for 10 times
@@ -28,6 +34,7 @@ def beep(times=10):
         sleep(0.1)
         alarm(0)
         sleep(0.1)
+
 
 def connect_mqtt():
     """Connect to the MQTT broker, retrying every 5s until it succeeds."""
@@ -41,9 +48,10 @@ def connect_mqtt():
             print("MQTT connection failed, retrying in 5s:", e)
             sleep(5)
 
+
 client = connect_mqtt()
 
-alarm(0) # shutdown after loop is done
+alarm(0)  # shutdown after loop is done
 sleep(1)  # give the sensor time to start
 
 # Read temp/humidity and trigger the alarm if either is out of range.
