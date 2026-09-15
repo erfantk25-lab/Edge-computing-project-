@@ -1,23 +1,25 @@
 from machine import Pin
 from dht import DHT11
 from time import sleep
-from umqtt.robust import MQTTClient
+from umqtt.simple import MQTTClient
 import json
 
 MQTT_BROKER = "" # TODO: Add the wifi-hotspot IP-address here
 TOPIC = b"home/pico/dht11"
 
-TEMP_MAX = 20   # C
-HUM_MAX = 10    # %
+TEMP_MAX = 30  # C
+HUM_MAX = 60  # %
 
 dht_sensor = DHT11(Pin(16))
 led = Pin(15, Pin.OUT)
 buzzer = Pin(14, Pin.OUT)
 
+
 # alarm
 def alarm(on):
     led.value(on)
     buzzer.value(on)
+
 
 # will beep for 10 times
 def beep(times=10):
@@ -50,18 +52,18 @@ while True:
         dht_sensor.measure()
         temp = dht_sensor.temperature()
         hum = dht_sensor.humidity()
-        print("Temp:", temp, "°C  Fukt:", hum, "%")
+        print("Temperature:", temp, "°C  Humidity:", hum, "%")
 
         # Send temperature and humidity data to MQTT-broker
         payload = json.dumps({"temperature": temp, "humidity": hum})
         client.publish(TOPIC, payload)
 
         if temp > TEMP_MAX or hum > HUM_MAX:
-            print("LARM!! VÄXTERNA DÖR!!")
+            print("ALERT: Plant conditions unsafe!")
             beep()
 
     except OSError:
-        print("Kunde inte läsa sensorn")
+        print("Could not read the sensor")
         alarm(0)
 
     sleep(2)
