@@ -1,9 +1,9 @@
-from machine import Pin, I2C
+import json
+
 from dht import DHT11
+from machine import Pin, I2C
 from time import sleep, sleep_ms
 from umqtt.simple import MQTTClient
-import json
-import time
 
 MQTT_BROKER = "" # TODO: Add the wifi-hotspot IP-address here
 TOPIC_DHT = b"home/pico/dht11"
@@ -12,10 +12,13 @@ TOPIC_LUX = b"home/pico/lux"
 TEMP_MAX = 30  # C
 HUM_MAX = 60  # %
 
-ADDR = 0x52
-i2c = I2C(1, scl=Pin(3), sda=Pin(2), freq=400000)
+LUX_MIN = 100
+LUX_MAX = 30000
 
-i2c.writeto_mem(ADDR, 0x00, b'\x02')
+ADDR = 0x52     # 0x52 is a Deafult address which APDS-9999 answers on
+i2c = I2C(1, scl=Pin(3), sda=Pin(2), freq=400000) # Creates a I2C object. 400000 = 400 kHz (highest speed for APDS-9999)
+
+i2c.writeto_mem(ADDR, 0x00, b'\x02') # Measures in ALS mode > only light, not full RGB
 sleep_ms(150)
 
 dht_sensor = DHT11(Pin(16))
@@ -43,6 +46,19 @@ def read_lux():
     raw = data[0] | (data[1] << 8) | (data[2] << 16)
     return raw * 0.180
 
+def check_conditions(temp, hum, lux):
+    """Return a list of readings that are out of range."""
+    alerts = []
+    if temp > TEMP_MAX:
+        alerts.append("temperature")
+    if hum > HUM_MAX:
+        alerts.append("humidity")
+    if lux < LUX_MIN:
+        alerts.append("lux")
+    if lux > LUX_MAX:
+        alerts.append("lux")
+    return alerts
+
 
 def connect_mqtt():
     """Connect to the MQTT broker, retrying every 5s until it succeeds."""
@@ -61,7 +77,7 @@ client = connect_mqtt()
 alarm(0) # shutdown after loop is done
 sleep(1)  # give the sensor time to start
 
-# Read temp/humidity and trigger the alarm if either is out of range.
+# Read temp/humidity/lux and trigger the alarm if either is out of range.
 while True:
     try:
         dht_sensor.measure()
@@ -71,11 +87,15 @@ while True:
         print("Temperature:", temp, "°C  Humidity:", hum, "% Lux:", round(lux, 1))
 
         # Send temperature, humidity and lux data to MQTT-broker
-        payload = json.dumps({"temperature": temp, "humidity": hum, "lux": round(lux, 1)})
-        client.publish(TOPIC, payload)
+        dht_payload = json.dumps({"temperature": temp, "humidity": hum})
+        client.publish(TOPIC_DHT, dht_payload)
 
-        if temp > TEMP_MAX or hum > HUM_MAX:
-            print("ALERT: Plant conditions unsafe!")
+        lux_payload = json.dumps({"lux": round(lux, 1)})
+        client.publish(TOPIC_LUX, lux_payload)
+
+        alerts = check_conditions(temp, hum, lux)
+        if alerts:
+            print("ALERT: Plant conditions unsafe!", alerts)
             beep()
 
     except OSError:
