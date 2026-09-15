@@ -3,14 +3,8 @@ from dht import DHT11
 from time import sleep
 from umqtt.simple import MQTTClient
 import json
-<<<<<<< HEAD
-from wifi import connect_wifi
-
-MQTT_BROKER = "172.31.32.1"
-=======
 
 MQTT_BROKER = "" # TODO: Add the wifi-hotspot IP-address here
->>>>>>> d860b80dc3619d96c1bd93ef89ed47eab99fc72f
 TOPIC = b"home/pico/dht11"
 
 TEMP_MAX = 30  # C
@@ -20,8 +14,6 @@ dht_sensor = DHT11(Pin(16))
 led = Pin(15, Pin.OUT)
 buzzer = Pin(14, Pin.OUT)
 
-if connect_wifi():
-    led.value(1)
 
 # alarm
 def alarm(on):
