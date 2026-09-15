@@ -1,6 +1,12 @@
 from machine import Pin
 from dht import DHT11
 from time import sleep
+from umqtt.simple import MQTTClient
+import json
+from wifi import connect_wifi
+
+MQTT_BROKER = "172.31.32.1"
+TOPIC = b"home/pico/dht11"
 
 TEMP_MAX = 30  # C
 HUM_MAX = 60  # %
@@ -9,6 +15,8 @@ dht_sensor = DHT11(Pin(16))
 led = Pin(15, Pin.OUT)
 buzzer = Pin(14, Pin.OUT)
 
+if connect_wifi():
+    led.value(1)
 
 # alarm
 def alarm(on):
