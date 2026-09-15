@@ -218,3 +218,5 @@ __marimo__/
 .vscode
 
 wifi_credentials.json
+
+.DS_Store
