@@ -9,6 +9,7 @@ def on_message(client, userdata, message):
 
     temperature = float(data["temperature"])
     humidity = float(data["humidity"])
+    lux = float(data["lux"])
 
     # TODO: Add light sensor data when the light sensor is implemented.
     # light = float(data["light"])
@@ -16,7 +17,7 @@ def on_message(client, userdata, message):
     query_db(
         """
         INSERT INTO sensor_readings
-            (time, temperature, humidity)
+            (time, temperature, humidity, lux)
         VALUES (NOW(), %s, %s)
         """,
         (temperature, humidity),
@@ -24,6 +25,7 @@ def on_message(client, userdata, message):
 
     print("Temperature:", temperature)
     print("Humidity:", humidity)
+    print("Lux:", lux)
 
 
 if __name__ == "__main__":
@@ -32,7 +34,8 @@ if __name__ == "__main__":
         CREATE TABLE IF NOT EXISTS sensor_readings (
             time TIMESTAMPTZ NOT NULL,
             temperature DOUBLE PRECISION,
-            humidity DOUBLE PRECISION
+            humidity DOUBLE PRECISION,
+            lux DOUBLE PRECISION
         )
         """
     )
@@ -42,6 +45,7 @@ if __name__ == "__main__":
     client.connect("mosquitto", 1883)
 
     client.subscribe("home/pico/dht11")
+    client.subscribe("home/pico/lux")
 
     client.on_message = on_message
 
