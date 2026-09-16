@@ -15,10 +15,13 @@ def on_connect(client, userdata, flags, reason_code, properties):
         print("Connection failed:", reason_code)
 
 def on_message(client, userdata, message):
-    """
-    Handles an incoming MQTT message by decoding JSON. Stores 
-    the information in the database, based on its topics. 
-    
+    """Callback by paho-mqtt when a message is received. 
+     
+    Decodes tje JSON payload and saves the values to the database
+    Handles topics:
+    - dht11
+    - lux
+
     """
     
     payload = message.payload.decode()
