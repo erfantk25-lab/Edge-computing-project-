@@ -1,8 +1,8 @@
 import json
 
-from dht import DHT11
-from machine import Pin, I2C
 from time import sleep, sleep_ms
+from dht import DHT11
+from machine import I2C, Pin
 from umqtt.simple import MQTTClient
 
 MQTT_BROKER = "" # TODO: Add the wifi-hotspot IP-address here
@@ -41,9 +41,15 @@ def beep(times=10):
         sleep(0.1)
 
 
-def read_lux():
-    data = i2c.readfrom_mem(ADDR, 0x00, 3)
+def read_lux_apds9999():
+    """Read ambient light (lux) from an APDS-9999 sensor"""
+    # Read 3 bytes from the ALS/Green data registers (0x0D-0x0F)
+    data = i2c.readfrom_mem(ADDR, 0x0D, 3)
+
+    # Combine the 3 bytes into 24-bit raw value:
     raw = data[0] | (data[1] << 8) | (data[2] << 16)
+
+    # Convert to lux using the sensor's scale factor 0.180 lux/count
     return raw * 0.180
 
 def check_conditions(temp, hum, lux):
@@ -83,7 +89,7 @@ while True:
         dht_sensor.measure()
         temp = dht_sensor.temperature()
         hum = dht_sensor.humidity()
-        lux = read_lux()
+        lux = read_lux_apds9999()
         print("Temperature:", temp, "°C  Humidity:", hum, "% Lux:", round(lux, 1))
 
         # Send temperature, humidity and lux data to MQTT-broker
