@@ -59,9 +59,7 @@ def check_conditions(temp, hum, lux):
         alerts.append("temperature")
     if hum > HUM_MAX:
         alerts.append("humidity")
-    if lux < LUX_MIN:
-        alerts.append("lux")
-    if lux > LUX_MAX:
+    if lux < LUX_MIN or lux > LUX_MAX:
         alerts.append("lux")
     return alerts
 
@@ -94,10 +92,14 @@ while True:
 
         # Send temperature, humidity and lux data to MQTT-broker
         dht_payload = json.dumps({"temperature": temp, "humidity": hum})
-        client.publish(TOPIC_DHT, dht_payload)
-
         lux_payload = json.dumps({"lux": round(lux, 1)})
-        client.publish(TOPIC_LUX, lux_payload)
+
+        try: 
+            client.publish(TOPIC_DHT, dht_payload)
+            client.publish(TOPIC_LUX, lux_payload)
+        except OSError as e:
+            print("MQTT publish faild, reconnecting:", e)
+            client = connect_mqtt()
 
         alerts = check_conditions(temp, hum, lux)
         if alerts:
