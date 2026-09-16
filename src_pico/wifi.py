@@ -1,7 +1,7 @@
 import rp2
 import network
 import json
-import time
+from time import sleep
 
 rp2.country("SE")
 
@@ -11,7 +11,7 @@ with open("wifi_credentials.json") as file:
 def connect_wifi(waiting_time = 10):
     wlan = network.WLAN(network.STA_IF)
     wlan.active(False)
-    time.sleep(1)
+    sleep(1)
     wlan.active(True)
     wlan.connect(credentials.get("WIFI_SSID"), credentials.get("WIFI_PASSWORD"))
 
@@ -23,6 +23,6 @@ def connect_wifi(waiting_time = 10):
         break
       print("status:", wlan.status())
       waiting_time -= 1
-      time.sleep(2)
+      sleep(2)
 
     return wlan.isconnected()
