@@ -1,12 +1,16 @@
 import paho.mqtt.client as mqtt
 import json
+import os
 from utils.connect_postgres import query_db
+
+TOPIC_DHT11 = "home/pico/dht11"
+TOPIC_LUX = "home/pico/lux"
 
 def on_connect(client, userdata, flags, reason_code, properties):
     if reason_code == 0:    # 0 = succeeded to connect
         print("Connected to broker")
-        client.subscribe("home/pico/dht11")
-        client.subscribe("home/pico/lux")
+        client.subscribe(TOPIC_DHT11, qos=1) # qos1 = resends message if not received
+        client.subscribe(TOPIC_LUX, qos=1)
     else:
         print("Connection failed:", reason_code)
 
@@ -58,7 +62,7 @@ if __name__ == "__main__":
         """
     )
 
-    client = mqtt.Client()
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2) # newer callback interface
     client.on_connect = on_connect
     client.on_message = on_message
 
