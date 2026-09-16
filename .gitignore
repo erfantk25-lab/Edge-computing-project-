@@ -217,3 +217,7 @@ __marimo__/
 .micropico
 wifi_credentials.json
 .vscode
+
+wifi_credentials.json
+
+.DS_Store
