@@ -1,4 +1,4 @@
-FROM python:3.13-slim
+FROM python:3.13-slim-bookworm
 
 # Copy the pre-built uv binary
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
@@ -15,6 +15,6 @@ RUN uv sync --frozen --no-dev --no-install-project
 
 # Copy application source files
 COPY src_pipeline/consumer.py /app/
-COPY src_pipeline/utils /app/utils
+COPY src_pipeline/utils/ /app/utils/
 
-CMD ["uv", "run", "python", "-u", "consumer.py"]
+CMD ["uv", "run", "consumer.py"]
