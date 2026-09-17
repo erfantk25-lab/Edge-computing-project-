@@ -1,6 +1,5 @@
 import paho.mqtt.client as mqtt
 import json
-import os
 from utils.connect_postgres import query_db
 
 TOPIC_DHT11 = "home/pico/dht11"
