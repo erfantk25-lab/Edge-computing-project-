@@ -48,3 +48,22 @@ Pipeline flow: Edge sensing & alert → MQTT ingestion → TimescaleDB storage �
 ├── README.md
 └── uv.lock
 ```
+
+## Hardware & Bill of Materials (BOM)
+
+| Component | Pin / Interface | Role |
+| :--- | :--- | :--- |
+| **Raspberry Pi Pico W** | Microcontroller | Edge compute node & Wi-Fi MQTT publisher |
+| **DHT11 Sensor** | GPIO 16 | Temperature and relative humidity monitoring |
+| **LDR Photoresistor**| ADC Pin (GPIO 26) | Ambient light intensity tracking |
+| **I2C Display (LCD/OLED)** | I2C (SDA / SCL) | Real-time local status display (Bonus) |
+| **Active Buzzer & LED**| GPIO 14 (PWM) / GPIO 15 | Local threshold breach alarm (audio-visual) |
+
+---
+## Edge Features & Logic
+
+* **Local Safety Validation:** Autonomous edge checks (`temp > 10°C` or `hum > 10%`) trigger a local buzzer routine and warning LED without network round-trip dependencies.
+* **Fail-Safe Telemetry:** Auto-reconnect routines handle intermittent Wi-Fi and MQTT broker outages.
+* **Wokwi Edge Simulation:** Circuit schematic and functional simulation available at [Wokwi Project](https://wokwi.com/projects/475319091061769217).
+
+---
