@@ -3,6 +3,7 @@ from dht import DHT11
 from time import sleep, sleep_ms
 from umqtt.simple import MQTTClient
 from wifi import connect_wifi
+import json
 
 MQTT_BROKER = "192.168.1.108"
 TOPIC_DHT = b"home/pico/dht11"
