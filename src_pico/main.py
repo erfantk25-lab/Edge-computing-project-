@@ -12,7 +12,6 @@ TOPIC_LUX = b"home/pico/lux"
 TEMP_MAX = 30  # C
 TEMP_MIN = 5  # C
 HUM_MIN = 10  # %
-BUZZER_FREQ = 4000
 
 LUX_MIN = 100
 LUX_MAX = 30000
