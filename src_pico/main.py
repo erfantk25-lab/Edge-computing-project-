@@ -10,6 +10,7 @@ TOPIC_DHT = b"home/pico/dht11"
 TOPIC_LUX = b"home/pico/lux"
 
 TEMP_MAX = 30  # C
+TEMP_MIN = 5  # C
 HUM_MIN = 10  # %
 BUZZER_FREQ = 4000
 
@@ -64,7 +65,7 @@ def read_lux_apds9999():
 def check_conditions(temp, hum, lux):
     """Return a list of readings that are out of range."""
     alerts = []
-    if temp > TEMP_MAX:
+    if temp < TEMP_MIN or temp > TEMP_MAX:
         alerts.append("temperature")
     if hum < HUM_MIN:
         alerts.append("humidity")
