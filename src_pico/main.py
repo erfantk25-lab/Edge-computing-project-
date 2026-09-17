@@ -2,17 +2,17 @@ from machine import Pin, PWM, I2C
 from dht import DHT11
 from time import sleep, sleep_ms
 from umqtt.simple import MQTTClient
-import json
 from wifi import connect_wifi
 from ntp_sync import sync_time, unix_time
+import json
 
 MQTT_BROKER = "192.168.1.108"
 TOPIC_DHT = b"home/pico/dht11"
 TOPIC_LUX = b"home/pico/lux"
 
-TEMP_MAX = 10  # C
-HUM_MAX = 10  # %
-BUZZER_FREQ = 4000
+TEMP_MAX = 30  # C
+TEMP_MIN = 5  # C
+HUM_MIN = 10  # %
 
 LUX_MIN = 100
 LUX_MAX = 30000
@@ -37,8 +37,8 @@ if connect_wifi():
 def alarm(on):
     led.value(on)
     if on:
-        buzzer.freq(BUZZER_FREQ)
-        buzzer.duty_u16(32768)  # 50 % duty = max volym
+        buzzer.freq(4000)
+        buzzer.duty_u16(32768)
     else:
         buzzer.duty_u16(0)
 
@@ -66,9 +66,9 @@ def read_lux_apds9999():
 def check_conditions(temp, hum, lux):
     """Return a list of readings that are out of range."""
     alerts = []
-    if temp > TEMP_MAX:
+    if temp < TEMP_MIN or temp > TEMP_MAX:
         alerts.append("temperature")
-    if hum > HUM_MAX:
+    if hum < HUM_MIN:
         alerts.append("humidity")
     if lux < LUX_MIN or lux > LUX_MAX:
         alerts.append("lux")
@@ -86,8 +86,11 @@ def connect_mqtt():
         except OSError as e:
             print("MQTT connection failed, retrying in 5s:", e)
             sleep(5)
-
     
+
+if not connect_wifi():
+    raise RuntimeError("WiFi connection failed")
+
 client = connect_mqtt()
 
 alarm(0)  # shutdown after loop is done
