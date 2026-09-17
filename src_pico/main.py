@@ -1,6 +1,6 @@
 from machine import Pin, PWM, I2C
 from dht import DHT11
-from time import sleep, sleep_ms, time
+from time import sleep, sleep_ms
 from umqtt.simple import MQTTClient
 import json
 from wifi import connect_wifi
