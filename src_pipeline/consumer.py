@@ -7,14 +7,9 @@ from utils.connect_postgres import query_db
 os.makedirs("logs", exist_ok=True)  # Creates logs/ if it doesn´t exists
 
 logging.basicConfig(    # Common log-function för smaller projects
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[      # where log messages are sent
-        logging.StreamHandler(),    # writes to stderr > shown in Docker
-        logging.FileHandler("logs/greenhouse.log"), # writes to a file on your disk
-    ]
+    level=os.getenv("LOG_LEVEL", "INFO"),
+    format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
 )
-
 logger = logging.getLogger(__name__)
 
 def on_message(client, userdata, message):
