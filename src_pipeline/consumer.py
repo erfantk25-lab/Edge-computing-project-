@@ -29,25 +29,27 @@ def on_message(client, userdata, message):
     if message.topic == "home/pico/dht11":
         temperature = float(data["temperature"])
         humidity = float(data["humidity"])
+        timestamp = data["timestamp"]
 
         query_db(
                 """
                 INSERT INTO sensor_readings
                     (time, temperature, humidity)
-                VALUES (NOW(), %s, %s)
+                VALUES (to_timestamp(%s), %s, %s)
                 """,
-                (temperature, humidity),
+                (timestamp, temperature, humidity),
             )
 
     elif message.topic == "home/pico/lux":
         lux = float(data["lux"])
+        timestamp = data["timestamp"]
 
         query_db(
             """
             INSERT INTO sensor_readings (time, lux)
-            VALUES (NOW(), %s)
+            VALUES (to_timestamp(%s), %s)
             """,
-            (lux,),
+            (timestamp, lux,),
         )
         print("Lux:", lux)
 
