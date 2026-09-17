@@ -4,7 +4,7 @@ from time import sleep, sleep_ms, time
 from umqtt.simple import MQTTClient
 import json
 from wifi import connect_wifi
-import ntptime
+from ntp_sync import sync_time, unix_time
 
 MQTT_BROKER = "192.168.1.108"
 TOPIC_DHT = b"home/pico/dht11"
@@ -30,6 +30,7 @@ buzzer.duty_u16(0)
 
 if connect_wifi():
     print("Wifi is connected")
+    sync_time() # sync the Pico's clock when wifi is connected
 
 
 # alarm
@@ -86,27 +87,6 @@ def connect_mqtt():
             print("MQTT connection failed, retrying in 5s:", e)
             sleep(5)
 
-def sync_time(retries=3):
-    """Sync the Pico's clock to a NTP-server (UTC).
-    
-    Requires wifi-connection. 
-
-    Args:
-        retries: Number of sync attempts. 
-
-    Returns:
-        True if the sync succeeded, False if all attemps failed. 
-    """
-    for attempt in range(retries):
-        try:
-            ntptime.settime()   # ntptime is an built-in clock function
-            print("Time synced:", time())
-            return True
-        except OSError as e:
-            print(f"NTP sync failed (attempt {attempt + 1}/{retries})", e)
-            sleep(2)
-    print("Could nor sync time after", retries, "attemps")
-    return False
     
 client = connect_mqtt()
 
@@ -120,11 +100,12 @@ while True:
         temp = dht_sensor.temperature()
         hum = dht_sensor.humidity()
         lux = read_lux_apds9999()
+        timestamp = unix_time()
         print("Temperature:", temp, "°C  Humidity:", hum, "% Lux:", round(lux, 1))
 
         # Send temperature, humidity and lux data to MQTT-broker
-        dht_payload = json.dumps({"temperature": temp, "humidity": hum})
-        lux_payload = json.dumps({"lux": round(lux, 1)})
+        dht_payload = json.dumps({"temperature": temp, "humidity": hum, "timestamp": timestamp})
+        lux_payload = json.dumps({"lux": round(lux, 1), "timestamp": timestamp})
 
         try: 
             client.publish(TOPIC_DHT, dht_payload)
