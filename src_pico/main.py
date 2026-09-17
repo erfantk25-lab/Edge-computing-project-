@@ -9,8 +9,8 @@ MQTT_BROKER = "192.168.1.108"
 TOPIC_DHT = b"home/pico/dht11"
 TOPIC_LUX = b"home/pico/lux"
 
-TEMP_MAX = 10  # C
-HUM_MAX = 10  # %
+TEMP_MAX = 30  # C
+HUM_MIN = 10  # %
 BUZZER_FREQ = 4000
 
 LUX_MIN = 100
@@ -66,7 +66,7 @@ def check_conditions(temp, hum, lux):
     alerts = []
     if temp > TEMP_MAX:
         alerts.append("temperature")
-    if hum > HUM_MAX:
+    if hum < HUM_MIN:
         alerts.append("humidity")
     if lux < LUX_MIN or lux > LUX_MAX:
         alerts.append("lux")
