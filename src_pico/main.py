@@ -1,4 +1,4 @@
-from machine import Pin, PWM
+from machine import Pin, PWM, I2C
 from dht import DHT11
 from time import sleep
 from umqtt.simple import MQTTClient
