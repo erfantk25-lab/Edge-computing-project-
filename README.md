@@ -130,3 +130,10 @@ Access the live dashboard at `http://localhost:3000` (Log in using the `GRAFANA_
 * **Visualizations:** Real-time time-series charts, environment gauges, and alert indicators.
 
 ---
+
+## Contributors
+
+* **[Lilit Ajoyan](https://github.com/LAjoyan)**
+* **[Josefin Lesley](https://github.com/Josefin3647)**
+* **[Leo Lindqvist Kröhnert](https://github.com/LeoLindqvist123)**
+* **[Erfan Tahmasebi](https://github.com/erfantk25-lab)**
