@@ -67,3 +67,66 @@ Pipeline flow: Edge sensing & alert → MQTT ingestion → TimescaleDB storage �
 * **Wokwi Edge Simulation:** Circuit schematic and functional simulation available at [Wokwi Project](https://wokwi.com/projects/475319091061769217).
 
 ---
+
+## Quickstart
+
+### Prerequisites
+* [Docker & Docker Compose](https://docs.docker.com/get-docker/) installed and running.
+* [Raspberry Pi Pico W](https://www.raspberrypi.com/documentation/microcontrollers/raspberry-pi-pico.html) flashed with the latest MicroPython UF2 firmware.
+* VS Code with the **MicroPico** extension (or Thonny IDE).
+
+---
+
+### 1. Launch Data Pipeline
+
+1. **Configure Environment:**
+   ```bash
+   cd src_pipeline
+   cp .env.example .env
+   ```
+
+Open `.env` and configure your credentials according to the template in `.env.example`.
+
+**Start Services:**
+
+```bash
+docker compose up -d --build
+```
+
+* Mosquitto starts on port 1883.
+* TimescaleDB completes its healthcheck and exposes port 5432.
+* The Python consumer waits for healthy upstream services, auto-initializes the `sensor_readings` table, and subscribes to incoming messages.
+
+**Verify Pipeline:**
+
+```bash
+docker compose logs -f consumer
+```
+
+---
+
+### 2. Configure & Flash Pico W
+
+1. Create `src_pico/wifi_credentials.json` (gitignored) and add your local network credentials:
+   ```json
+   {
+     "ssid": "YOUR_WIFI_NAME",
+     "password": "YOUR_WIFI_PASSWORD"
+   }
+   ```
+2. In `src_pico/main.py`, set `MQTT_BROKER` to your Docker host IP (use your machine's local LAN IP, e.g., `192.168.1.X`, not `localhost`).
+3. Open the repository root in VS Code using the **MicroPico** extension, connect the Pico W via USB, and upload the `src_pico/` folder to the device.
+4. Run `main.py`. Telemetry will stream to Mosquitto, and the local buzzer/LED alarm will fire if thresholds are exceeded.
+
+---
+
+
+## Observability & Dashboard
+
+Access the live dashboard at `http://localhost:3000` (Log in using the `GRAFANA_USER` and `GRAFANA_PASSWORD` defined in your `.env` file).
+*(The TimescaleDB data source and dashboards are auto-provisioned).*
+
+* **Tracked Metrics:** Temperature (°C), Humidity (%), Light Level, and Alert Breaches.
+* **Visualizations:** Real-time time-series charts, environment gauges, and alert indicators.
+
+---
