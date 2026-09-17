@@ -17,7 +17,7 @@ def on_connect(client, userdata, flags, reason_code, properties):
 def on_message(client, userdata, message):
     """Callback by paho-mqtt when a message is received. 
      
-    Decodes tje JSON payload and saves the values to the database
+    Decodes the JSON payload and saves the values to the database
     Handles topics:
     - dht11
     - lux

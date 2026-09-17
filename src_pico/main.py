@@ -87,7 +87,7 @@ def connect_mqtt():
 
 
 if not connect_wifi():
-    raise RuntimeError("WiFi misslyckades")
+    raise RuntimeError("WiFi connection failed")
 
 client = connect_mqtt()
 
