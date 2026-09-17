@@ -9,19 +9,18 @@ TOPIC_LUX = "home/pico/lux"
 def on_connect(client, userdata, flags, reason_code, properties):
     if reason_code == 0:    # 0 = succeeded to connect
         print("Connected to broker")
-        client.subscribe(TOPIC_DHT11, qos=1) # qos1 = resends message if not received
+        client.subscribe(TOPIC_DHT11, qos=1) # qos1 = resends message at least once if TOPIC not received
         client.subscribe(TOPIC_LUX, qos=1)
     else:
         print("Connection failed:", reason_code)
 
 def on_message(client, userdata, message):
-    """Callback by paho-mqtt when a message is received. 
+    """Callback from paho-mqtt when a message is received. 
      
-    Decodes tje JSON payload and saves the values to the database
+    Decodes the JSON payload and saves the values to the database.
     Handles topics:
     - dht11
     - lux
-
     """
     
     payload = message.payload.decode()

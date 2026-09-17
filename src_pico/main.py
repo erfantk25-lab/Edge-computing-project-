@@ -1,9 +1,10 @@
 from machine import Pin, PWM, I2C
 from dht import DHT11
-from time import sleep, sleep_ms
+from time import sleep, sleep_ms, time
 from umqtt.simple import MQTTClient
 import json
 from wifi import connect_wifi
+import ntptime
 
 MQTT_BROKER = "192.168.1.108"
 TOPIC_DHT = b"home/pico/dht11"
@@ -85,7 +86,28 @@ def connect_mqtt():
             print("MQTT connection failed, retrying in 5s:", e)
             sleep(5)
 
+def sync_time(retries=3):
+    """Sync the Pico's clock to a NTP-server (UTC).
+    
+    Requires wifi-connection. 
 
+    Args:
+        retries: Number of sync attempts. 
+
+    Returns:
+        True if the sync succeeded, False if all attemps failed. 
+    """
+    for attempt in range(retries):
+        try:
+            ntptime.settime()   # ntptime is an built-in clock function
+            print("Time synced:", time())
+            return True
+        except OSError as e:
+            print(f"NTP sync failed (attempt {attempt + 1}/{retries})", e)
+            sleep(2)
+    print("Could nor sync time after", retries, "attemps")
+    return False
+    
 client = connect_mqtt()
 
 alarm(0)  # shutdown after loop is done
