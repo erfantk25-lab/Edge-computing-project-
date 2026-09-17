@@ -1,6 +1,9 @@
 import psycopg2
 import os
 from dotenv import load_dotenv
+import logging
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -26,7 +29,7 @@ def query_db(sql: str, parameters: tuple | None = None):
                 cur.execute(sql, parameters) # parameters passed separately -> protects against SQL injection
                 return cur.fetchall() if cur.description else None
     except psycopg2.Error as e:
-        print(f"Database error: {e}")
+        logger.error(f"Database error: {e}")
         raise
     finally:
         conn.close()
