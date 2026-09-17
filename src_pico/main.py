@@ -2,7 +2,6 @@ from machine import Pin, PWM, I2C
 from dht import DHT11
 from time import sleep, sleep_ms
 from umqtt.simple import MQTTClient
-import json
 from wifi import connect_wifi
 
 MQTT_BROKER = "192.168.1.108"
@@ -36,8 +35,8 @@ if connect_wifi():
 def alarm(on):
     led.value(on)
     if on:
-        buzzer.freq(BUZZER_FREQ)
-        buzzer.duty_u16(32768)  # 50 % duty = max volym
+        buzzer.freq(4000)
+        buzzer.duty_u16(32768)
     else:
         buzzer.duty_u16(0)
 
@@ -86,6 +85,9 @@ def connect_mqtt():
             print("MQTT connection failed, retrying in 5s:", e)
             sleep(5)
 
+
+if not connect_wifi():
+    raise RuntimeError("WiFi misslyckades")
 
 client = connect_mqtt()
 
