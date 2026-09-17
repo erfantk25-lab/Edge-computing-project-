@@ -1,6 +1,5 @@
 import paho.mqtt.client as mqtt
 import json
-import os
 from utils.connect_postgres import query_db
 
 TOPIC_DHT11 = "home/pico/dht11"
@@ -9,19 +8,18 @@ TOPIC_LUX = "home/pico/lux"
 def on_connect(client, userdata, flags, reason_code, properties):
     if reason_code == 0:    # 0 = succeeded to connect
         print("Connected to broker")
-        client.subscribe(TOPIC_DHT11, qos=1) # qos1 = resends message if not received
+        client.subscribe(TOPIC_DHT11, qos=1) # qos1 = resends message at least once if TOPIC not received
         client.subscribe(TOPIC_LUX, qos=1)
     else:
         print("Connection failed:", reason_code)
 
 def on_message(client, userdata, message):
-    """Callback by paho-mqtt when a message is received. 
+    """Callback from paho-mqtt when a message is received. 
      
     Decodes the JSON payload and saves the values to the database
     Handles topics:
     - dht11
     - lux
-
     """
     
     payload = message.payload.decode()
@@ -30,25 +28,27 @@ def on_message(client, userdata, message):
     if message.topic == "home/pico/dht11":
         temperature = float(data["temperature"])
         humidity = float(data["humidity"])
+        timestamp = data["timestamp"]
 
         query_db(
                 """
                 INSERT INTO sensor_readings
                     (time, temperature, humidity)
-                VALUES (NOW(), %s, %s)
+                VALUES (to_timestamp(%s), %s, %s)
                 """,
-                (temperature, humidity),
+                (timestamp, temperature, humidity),
             )
 
     elif message.topic == "home/pico/lux":
         lux = float(data["lux"])
+        timestamp = data["timestamp"]
 
         query_db(
             """
             INSERT INTO sensor_readings (time, lux)
-            VALUES (NOW(), %s)
+            VALUES (to_timestamp(%s), %s)
             """,
-            (lux,),
+            (timestamp, lux,),
         )
         print("Lux:", lux)
 
