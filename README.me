@@ -1,0 +1,15 @@
+## Environment Variables
+
+Copy `.env.example` to `.env` and fill in the values:
+
+```bash
+cp .env.example .env
+```
+
+- **`POSTGRES_DB`** — Name of the Postgres database
+- **`POSTGRES_USER`** — Postgres username
+- **`POSTGRES_PASSWORD`** — Postgres password
+- **`DB_HOST`** — Hostname of the database service (defaults to `timescaledb` in Docker)
+- **`LOG_LEVEL`** — Python logging level (`DEBUG`, `INFO`, `WARNING`, `ERROR`). Default: `INFO`
+
+Set `LOG_LEVEL=DEBUG` when troubleshooting the consumer's MQTT or database logic.
