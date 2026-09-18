@@ -6,6 +6,9 @@ from wifi import connect_wifi
 from led import normal, warning, error_blink, mqtt_error
 import json
 
+# LLM-assisted:
+# LED status functions were generated with help from an LLM
+# and then reviewed and adapted by the team.
 
 MQTT_BROKER = "192.168.1.108"
 
@@ -60,7 +63,7 @@ def read_lux_apds9999():
 
 
 def check_conditions(temp, hum, lux):
-    """Return a list of sensor readings outside the allowed limits."""
+    """Return sensor readings that are outside the allowed limits."""
     alerts = []
 
     if temp < TEMP_MIN or temp > TEMP_MAX:
@@ -109,21 +112,16 @@ client = connect_mqtt()
 
 while True:
     try:
-        # Read DHT11
+        # Read sensors
         dht_sensor.measure()
         temp = dht_sensor.temperature()
         hum = dht_sensor.humidity()
-
-        # Read light sensor
         lux = read_lux_apds9999()
 
         print(
-            "Temperature:",
-            temp,
-            "°C | Humidity:",
-            hum,
-            "% | Lux:",
-            round(lux, 1)
+            "Temperature:", temp,
+            "°C | Humidity:", hum,
+            "% | Lux:", round(lux, 1)
         )
 
         # Create MQTT payloads
@@ -141,14 +139,13 @@ while True:
             client.publish(TOPIC_DHT, dht_payload)
             client.publish(TOPIC_LUX, lux_payload)
             print("Sensor data sent to MQTT")
-
         except OSError as e:
             print("MQTT publish failed, reconnecting:", e)
             mqtt_error()
             client = connect_mqtt()
             continue
 
-        # Check plant conditions
+        # Check sensor conditions
         alerts = check_conditions(temp, hum, lux)
 
         if alerts:
