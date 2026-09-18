@@ -1,11 +1,6 @@
 from machine import Pin
 from time import sleep
 
-# LED pins
-# Green = normal
-# Yellow = warning
-# Red = error
-
 green_led = Pin(15, Pin.OUT)
 yellow_led = Pin(12, Pin.OUT)
 red_led = Pin(13, Pin.OUT)
