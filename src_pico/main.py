@@ -184,6 +184,29 @@ def check_conditions(temp, hum, lux):
 
 
 
+def read_lux_apds9999():
+    """Read ambient light (lux) from an APDS-9999 sensor"""
+    # Read 3 bytes from the ALS/Green data registers (0x0D-0x0F)
+    data = i2c.readfrom_mem(ADDR, 0x0D, 3)
+
+    # Combine the 3 bytes into 24-bit raw value:
+    raw = data[0] | (data[1] << 8) | (data[2] << 16)
+
+    # Convert to lux using the sensor's scale factor 0.180 lux/count
+    return raw * 0.180
+
+def check_conditions(temp, hum, lux):
+    """Return a list of readings that are out of range."""
+    alerts = []
+    if temp < TEMP_MIN or temp > TEMP_MAX:
+        alerts.append("temperature")
+    if hum < HUM_MIN:
+        alerts.append("humidity")
+    if lux < LUX_MIN or lux > LUX_MAX:
+        alerts.append("lux")
+    return alerts
+
+
 def connect_mqtt():
     """
     Connect to the MQTT broker.
