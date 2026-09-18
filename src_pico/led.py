@@ -1,7 +1,10 @@
 from machine import Pin
 from time import sleep
-from led import all_off, normal, warning, error_blink, mqtt_error
 
+# LED pins
+# Green = normal
+# Yellow = warning
+# Red = error
 
 green_led = Pin(15, Pin.OUT)
 yellow_led = Pin(12, Pin.OUT)
