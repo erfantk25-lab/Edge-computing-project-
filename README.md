@@ -85,7 +85,7 @@ Pipeline flow: Edge sensing & alert → MQTT ingestion → TimescaleDB storage �
    cp .env.example .env
    ```
 
-Open `.env` and configure your credentials according to the template in `.env.example`.
+Open `.env` and configure your credentials according to the template in [`.env.example`](./src_pipeline/.env.example).
 
 **Start Services:**
 
