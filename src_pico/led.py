@@ -31,6 +31,8 @@ def error_blink(times=5, delay=0.2):
         red_led.value(0)
         sleep(delay)
 
+    red_led.value(1)
+
 
 def mqtt_error(times=10, delay=0.05):
     all_off()
@@ -40,3 +42,5 @@ def mqtt_error(times=10, delay=0.05):
         sleep(delay)
         red_led.value(0)
         sleep(delay)
+
+    red_led.value(1)
