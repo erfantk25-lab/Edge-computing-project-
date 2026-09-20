@@ -8,6 +8,8 @@ services:
       - .env
     ports:
       - "1883:1883"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
 
   consumer:
     container_name: consumer
@@ -44,8 +46,20 @@ services:
       timeout: 5s
       retries: 10
 
-  # TODO: Set up Grafana dashboard and connect to TimescaleDB
-  # Requires: GF_SECURITY_ADMIN credentials in .env
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      timescaledb:
+        condition: service_healthy
 
 volumes:
   timescale_data:
+  grafana_data:

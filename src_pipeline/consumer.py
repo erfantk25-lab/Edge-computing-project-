@@ -2,7 +2,39 @@ import paho.mqtt.client as mqtt
 import json
 import traceback
 from utils.connect_postgres import query_db
+import requests
 
+TOPIC_DHT11 = "home/pico/dht11"
+TOPIC_LUX = "home/pico/lux"
+
+WEBHOOK = os.getenv("DISCORD_WEBHOOK_URL")
+
+latest = {"temperature": None, "humidity": None, "lux": None}
+
+def on_connect(client, userdata, flags, reason_code, properties):
+    if reason_code == 0:    # 0 = succeeded to connect
+        print("Connected to broker")
+        client.subscribe(TOPIC_DHT11, qos=1) # qos1 = resends message if not received
+        client.subscribe(TOPIC_LUX, qos=1)
+    else:
+        print("Connection failed:", reason_code)    
+
+
+def notify_discord(alerts):
+    if not WEBHOOK or not alerts:
+        return
+
+    text = (
+        "**Warning!**\n\n"
+        + f"Temp: {latest['temperature']} °C"
+        + f" | Humidity: {latest['humidity']} %"
+        + f" | Light: {latest['lux']} lux"
+        + "\n\nPlease check on the plants!"
+    )
+    try:
+        requests.post(WEBHOOK, json={"content": text}, timeout=5)
+    except requests.RequestException as e:
+        print("Discord message failed:", e)
 
 def on_message(client, userdata, message):
     try:
