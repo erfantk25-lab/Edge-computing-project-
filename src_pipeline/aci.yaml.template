@@ -1,56 +1,73 @@
-name: smartgrow-backend
-apiVersion: '2021-10-01'
-location: francecentral
+apiVersion: 2021-10-01
+location: ${LOCATION}
+name: smartgrow-aci-group
 properties:
   containers:
   - name: mosquitto
     properties:
       image: ${ACR_NAME}.azurecr.io/smartgrow-mosquitto:latest
+      ports:
+      - port: 1883
+        protocol: TCP
       resources:
         requests:
           cpu: 0.5
           memoryInGB: 0.5
-      ports:
-      - port: 1883
-        protocol: TCP
       environmentVariables:
       - name: MQTT_USER
-        value: pico_device
+        value: ${MQTT_USER}
       - name: MQTT_PASSWORD
         secureValue: ${MQTT_PASSWORD}
+
   - name: consumer
     properties:
       image: ${ACR_NAME}.azurecr.io/smartgrow-consumer:latest
       resources:
         requests:
           cpu: 0.5
-          memoryInGB: 0.5
+          memoryInGB: 1.0
       environmentVariables:
+      - name: MQTT_HOST
+        value: localhost
+      - name: DB_HOST
+        value: localhost
       - name: MQTT_USER
-        value: pico_device
+        value: ${MQTT_USER}
       - name: MQTT_PASSWORD
         secureValue: ${MQTT_PASSWORD}
       - name: POSTGRES_DB
-        value: sensordb
+        value: ${POSTGRES_DB}
       - name: POSTGRES_USER
         value: ${POSTGRES_USER}
       - name: POSTGRES_PASSWORD
         secureValue: ${POSTGRES_PASSWORD}
-      - name: DB_HOST
-        value: ${DB_HOST}
-      - name: DB_PORT
-        value: "5432"
-      - name: DB_SSLMODE
-        value: "require"
+
+  - name: timescaledb
+    properties:
+      image: timescale/timescaledb:latest-pg18
+      resources:
+        requests:
+          cpu: 1.0
+          memoryInGB: 2.0
+      environmentVariables:
+      - name: POSTGRES_DB
+        value: ${POSTGRES_DB}
+      - name: POSTGRES_USER
+        value: ${POSTGRES_USER}
+      - name: POSTGRES_PASSWORD
+        secureValue: ${POSTGRES_PASSWORD}
+
   osType: Linux
-  restartPolicy: Always
   ipAddress:
     type: Public
+    dnsNameLabel: ${DNS_NAME_LABEL}
     ports:
     - protocol: TCP
       port: 1883
-    dnsNameLabel: ${DNS_NAME_LABEL}
   imageRegistryCredentials:
   - server: ${ACR_NAME}.azurecr.io
     username: ${ACR_USERNAME}
     password: ${ACR_PASSWORD}
+tags:
+  project: smartgrow
+type: Microsoft.ContainerInstance/containerGroups

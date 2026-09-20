@@ -11,6 +11,7 @@ def on_message(client, userdata, message):
     humidity = float(data["humidity"])
 
     # TODO: Add light sensor data when the light sensor is implemented.
+    # light = float(data["light"])
 
     query_db(
         """
@@ -27,12 +28,11 @@ def on_message(client, userdata, message):
 
 if __name__ == "__main__":
     import os
-    
     import time
     
-    # Simple retry loop to wait for TimescaleDB to be ready (critical for ACI where all containers start at once)
-    max_retries = 10
-    for attempt in range(max_retries):
+    # Wait for DB to be ready
+    db_ready = False
+    while not db_ready:
         try:
             query_db(
                 """
@@ -43,40 +43,31 @@ if __name__ == "__main__":
                 )
                 """
             )
-            print("Successfully connected to TimescaleDB and verified table.")
-            break
+            db_ready = True
+            print("Database is ready and initialized.")
         except Exception as e:
-            print(f"Waiting for TimescaleDB... (Attempt {attempt + 1}/{max_retries}): {e}")
-            time.sleep(5)
-    else:
-        print("Failed to connect to TimescaleDB after multiple attempts. Exiting.")
-        exit(1)
+            print(f"Waiting for database to start... ({e})")
+            time.sleep(2)
 
-    client = mqtt.Client()
-    
-    # Configure authentication if credentials are provided in the environment
+    mqtt_host = os.getenv("MQTT_HOST", "localhost")
     mqtt_user = os.getenv("MQTT_USER")
     mqtt_password = os.getenv("MQTT_PASSWORD")
+    
+    client = mqtt.Client()
     if mqtt_user and mqtt_password:
         client.username_pw_set(mqtt_user, mqtt_password)
 
-    # Use environment variable for the MQTT host, defaulting to localhost (used in ACI)
-    mqtt_host = os.getenv("MQTT_HOST", "localhost")
-    
-    for attempt in range(max_retries):
+    # Wait for MQTT to be ready
+    mqtt_ready = False
+    while not mqtt_ready:
         try:
             client.connect(mqtt_host, 1883)
-            print(f"Successfully connected to MQTT broker at {mqtt_host}.")
-            break
+            mqtt_ready = True
+            print(f"Connected to MQTT broker at {mqtt_host}.")
         except Exception as e:
-            print(f"Waiting for Mosquitto... (Attempt {attempt + 1}/{max_retries}): {e}")
-            time.sleep(5)
-    else:
-        print("Failed to connect to Mosquitto after multiple attempts. Exiting.")
-        exit(1)
+            print(f"Waiting for MQTT broker to start... ({e})")
+            time.sleep(2)
 
     client.subscribe("home/pico/dht11")
-
     client.on_message = on_message
-
     client.loop_forever()
