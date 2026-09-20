@@ -2,9 +2,12 @@ import paho.mqtt.client as mqtt
 import json
 import os
 from utils.connect_postgres import query_db
+import requests
 
 TOPIC_DHT11 = "home/pico/dht11"
 TOPIC_LUX = "home/pico/lux"
+
+WEBHOOK = os.getenv("DISCORD_WEBHOOK_URL")
 
 def on_connect(client, userdata, flags, reason_code, properties):
     if reason_code == 0:    # 0 = succeeded to connect
@@ -27,6 +30,15 @@ def on_message(client, userdata, message):
     payload = message.payload.decode()
     data = json.loads(payload)
 
+    def notify_discord(alerts):
+      if not WEBHOOK or not alerts:
+        return
+    text = "Green house alarm!\n" + "\n".join(f"• {a}" for a in alerts)
+    try:
+        requests.post(WEBHOOK, json={"content": text}, timeout=5)
+    except requests.RequestException as e:
+        print("Discord message failed:", e)
+
     if message.topic == "home/pico/dht11":
         temperature = float(data["temperature"])
         humidity = float(data["humidity"])
@@ -39,6 +51,8 @@ def on_message(client, userdata, message):
                 """,
                 (temperature, humidity),
             )
+        notify_discord(data.get("alerts", []))
+    
 
     elif message.topic == "home/pico/lux":
         lux = float(data["lux"])
