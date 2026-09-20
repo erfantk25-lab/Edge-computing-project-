@@ -124,6 +124,14 @@ while True:
         lux = read_lux_apds9999()
         print("Temperature:", temp, "°C  Humidity:", hum, "% Lux:", round(lux, 1))
 
+        # --- LCD Display Update ---
+        lcd.clear()
+        lcd.move_to(0, 0)
+        lcd.putstr(f"Temp:{temp}C Hum:{hum}%")
+        lcd.move_to(0, 1)
+        lcd.putstr(f"Lux: {round(lux, 1)}")
+        # --------------------------
+
         alerts = check_conditions(temp, hum, lux)
 
         # Send temperature, humidity and lux data to MQTT-broker, and alerts
