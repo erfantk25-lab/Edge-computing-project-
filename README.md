@@ -79,22 +79,21 @@ Pipeline flow: Edge sensing & alert → MQTT ingestion → TimescaleDB storage �
 | **Breadboard & Jumpers** | Physical Layout | Component routing and prototyping |
 
 ---
-## Edge Features & Logic
+## ⚡ Key Features
 
-* **Local Safety Validation:** Autonomous edge checks (`temp > 10°C` or `hum > 10%`) trigger a local buzzer routine and warning LED without network round-trip dependencies.
-* **Fail-Safe Telemetry:** Auto-reconnect routines handle intermittent Wi-Fi and MQTT broker outages.
-* **Wokwi Edge Simulation:** Circuit schematic and functional simulation available at [Wokwi Project](https://wokwi.com/projects/475319091061769217).
-
----
-
-## Quickstart
-
-### Prerequisites
-* [Docker & Docker Compose](https://docs.docker.com/get-docker/) installed and running.
-* [Raspberry Pi Pico W](https://www.raspberrypi.com/documentation/microcontrollers/raspberry-pi-pico.html) flashed with the latest MicroPython UF2 firmware.
-* VS Code with the **MicroPico** extension (or Thonny IDE).
+* **Autonomous Edge Safety:** Local edge checks (`temp > 30°C / < 5°C`, `hum < 10%`, or abnormal lux) immediately trigger a local buzzer routine and warning LED without waiting for network instructions.
+* **Remote Discord Alerts:** The Python consumer listens for alert flags from the MQTT payload and automatically dispatches a webhook message to Discord.
+* **Edge Monitoring (Bonus):** Live system status is displayed directly on the physical LCD screen.
+* **Fail-Safe Telemetry:** Built-in auto-reconnect routines handle intermittent Wi-Fi and MQTT broker outages smoothly (QoS 1 utilized).
 
 ---
+
+## 🌐 Wokwi Simulation
+
+A digital twin of our hardware setup (circuit schematic and functional simulation) is available here:
+👉 **[View Wokwi Project](https://wokwi.com/projects/475319091061769217)**
+
+![Wokwi Simulation](docs/assets/wokwi.jpg)
 
 ### 1. Launch Data Pipeline
 
