@@ -79,11 +79,16 @@ export POSTGRES_PASSWORD="$DB_ADMIN_PASSWORD"
 export MQTT_PASSWORD="$MQTT_PASSWORD"
 
 echo ""
-echo "=== 1. Creating Resource Group ==="
-az group create --name $RESOURCE_GROUP --location $LOCATION
+echo "=== 1. Handling Resource Group ==="
+if az group show --name $RESOURCE_GROUP > /dev/null 2>&1; then
+    echo "Resource group $RESOURCE_GROUP already exists. Reusing it."
+else
+    echo "Resource group $RESOURCE_GROUP does not exist. Creating it in $LOCATION..."
+    az group create --name $RESOURCE_GROUP --location $LOCATION
+fi
 
 echo "=== 2. Creating Azure Container Registry (ACR) ==="
-az acr create --resource-group $RESOURCE_GROUP --name $ACR_NAME --sku Basic --admin-enabled true
+az acr create --resource-group $RESOURCE_GROUP --name $ACR_NAME --location $LOCATION --sku Basic --admin-enabled true
 
 echo "=== 3. Building and Pushing Images to ACR ==="
 az acr build --registry $ACR_NAME --image mosquitto:latest -f src_pipeline/dockerfiles/mosquitto.dockerfile .
