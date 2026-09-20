@@ -95,61 +95,35 @@ A digital twin of our hardware setup (circuit schematic and functional simulatio
 
 ![Wokwi Simulation](docs/assets/wokwi.jpg)
 
-### 1. Launch Data Pipeline
 
-1. **Configure Environment:**
-   ```bash
-   cd src_pipeline
-   cp .env.example .env
-   ```
+---
 
-Open `.env` and configure your credentials according to the template in [`.env.example`](./src_pipeline/.env.example).
+## 🚀 Quickstart
 
-**Start Services:**
+### 1. Launch the Data Pipeline
+Ensure Docker is installed and running on your host machine.
 
 ```bash
+cd src_pipeline
+cp .env.example .env
+```
+
+Edit your .env file to include your database credentials, Grafana passwords, and your DISCORD_WEBHOOK_URL. Then, spin up the stack:
+
+```Bash
 docker compose up -d --build
 ```
-
-* Mosquitto starts on port 1883.
-* TimescaleDB completes its healthcheck and exposes port 5432.
-* The Python consumer waits for healthy upstream services, auto-initializes the `sensor_readings` table, and subscribes to incoming messages.
-
-**Verify Pipeline:**
-
-```bash
-docker compose logs -f consumer
-```
-
----
+* The Python consumer will wait for TimescaleDB and Mosquitto to be healthy, auto-initialize the `sensor_readings` table, and begin listening for MQTT messages on port 1883.
 
 ### 2. Configure & Flash Pico W
+1. Create `src_pico/wifi_credentials.json` with your network `ssid` and `password`.
+2. In `src_pico/main.py`, set `MQTT_BROKER` to your computer's local LAN IP (currently set to `192.168.0.101`).
+3. Connect the Pico W, upload the `src_pico/` folder via the VS Code MicroPico extension (or Thonny), and run `main.py`.
 
-1. Create `src_pico/wifi_credentials.json` (gitignored) and add your local network credentials:
-   ```json
-   {
-     "ssid": "YOUR_WIFI_NAME",
-     "password": "YOUR_WIFI_PASSWORD"
-   }
-   ```
-2. In `src_pico/main.py`, set `MQTT_BROKER` to your Docker host IP (use your machine's local LAN IP, e.g., `192.168.1.X`, not `localhost`).
-3. Open the repository root in VS Code using the **MicroPico** extension, connect the Pico W via USB, and upload the `src_pico/` folder to the device.
-4. Run `main.py`. Telemetry will stream to Mosquitto, and the local buzzer/LED alarm will fire if thresholds are exceeded.
+### 3. View Live Data
+Access the dashboard at `http://localhost:3000` (Log in using the credentials in your `.env` file). The TimescaleDB data source and Grafana dashboards can be configured to show the live time-series data!
 
----
-
-
-## Observability & Dashboard
-
-Access the live dashboard at `http://localhost:3000` (Log in using the `GRAFANA_USER` and `GRAFANA_PASSWORD` defined in your `.env` file).
-*(The TimescaleDB data source and dashboards are auto-provisioned).*
-
-* **Tracked Metrics:** Temperature (°C), Humidity (%), Light Level, and Alert Breaches.
-* **Visualizations:** Real-time time-series charts, environment gauges, and alert indicators.
-
----
-
-## Contributors
+## 👥 Contributors
 
 * **[Lilit Ajoyan](https://github.com/LAjoyan)**
 * **[Josefin Lesley](https://github.com/Josefin3647)**
