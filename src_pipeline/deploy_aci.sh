@@ -48,20 +48,12 @@ else
     echo "ACR created."
 fi
 
-# 5. Build and Push Images using ACR Tasks
-echo "=== Building and Pushing Images to ACR ==="
-echo "Building mosquitto image..."
-az acr build --registry "$ACR_NAME" --image smartgrow-mosquitto:latest -f src_pipeline/dockerfiles/mosquitto.dockerfile .
-
-echo "Building consumer image..."
-az acr build --registry "$ACR_NAME" --image smartgrow-consumer:latest -f src_pipeline/dockerfiles/consumer.dockerfile .
-
-# 6. Retrieve ACR Credentials
-echo "=== Retrieving ACR Credentials ==="
+# 5. Retrieve ACR Credentials (Required for ACI deployment)
+echo "=== Retrieving ACR Credentials for ACI Pull ==="
 export ACR_USERNAME=$(az acr credential show --name "$ACR_NAME" --query "username" --output tsv)
 export ACR_PASSWORD=$(az acr credential show --name "$ACR_NAME" --query "passwords[0].value" --output tsv)
 
-# 7. Generate ACI YAML Configuration
+# 6. Generate ACI YAML Configuration
 echo "=== Generating ACI Configuration ==="
 # Create a secure temporary file outside the workspace
 ACI_YAML=$(mktemp)
@@ -71,7 +63,7 @@ trap 'rm -f "$ACI_YAML"' EXIT
 # Using envsubst to replace variables in the template
 envsubst < src_pipeline/aci.yaml.template > "$ACI_YAML"
 
-# 8. Deploy to Azure Container Instances
+# 7. Deploy to Azure Container Instances
 echo "=== Deploying Azure Container Instances (ACI) ==="
 az container create \
   --resource-group "$RESOURCE_GROUP" \
