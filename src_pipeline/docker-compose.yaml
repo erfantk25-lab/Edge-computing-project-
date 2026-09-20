@@ -2,9 +2,10 @@ services:
   mosquitto:
     container_name: mosquitto
     image: eclipse-mosquitto
-    command: mosquitto -c /dev/null -p 1883
     ports:
       - "1883:1883"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
 
   consumer:
     container_name: consumer
@@ -31,15 +32,27 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - timescale_data:/var/lib/postgresql/data
+      - timescale_data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 10
 
-  # TODO: Set up Grafana dashboard and connect to TimescaleDB
-  # Requires: GF_SECURITY_ADMIN credentials in .env
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      timescaledb:
+        condition: service_healthy
 
 volumes:
   timescale_data:
+  grafana_data:

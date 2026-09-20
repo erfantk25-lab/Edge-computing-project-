@@ -5,7 +5,7 @@ from umqtt.simple import MQTTClient
 from wifi import connect_wifi
 import json
 
-MQTT_BROKER = "192.168.1.108"
+MQTT_BROKER = "192.168.0.101"
 TOPIC_DHT = b"home/pico/dht11"
 TOPIC_LUX = b"home/pico/lux"
 
@@ -16,10 +16,12 @@ HUM_MIN = 10  # %
 LUX_MIN = 100
 LUX_MAX = 30000
 
-ADDR = 0x52     # 0x52 is a Deafult address which APDS-9999 answers on
-i2c = I2C(1, scl=Pin(3), sda=Pin(2), freq=400000) # Creates a I2C object. 400000 = 400 kHz (highest speed for APDS-9999)
+ADDR = 0x52  # 0x52 is a Deafult address which APDS-9999 answers on
+i2c = I2C(
+    1, scl=Pin(3), sda=Pin(2), freq=400000
+)  # Creates a I2C object. 400000 = 400 kHz (highest speed for APDS-9999)
 
-i2c.writeto_mem(ADDR, 0x00, b'\x02') # Measures in ALS mode > only light, not full RGB
+i2c.writeto_mem(ADDR, 0x00, b"\x02")  # Measures in ALS mode > only light, not full RGB
 sleep_ms(150)
 
 dht_sensor = DHT11(Pin(16))
@@ -29,6 +31,8 @@ buzzer.duty_u16(0)
 
 if connect_wifi():
     print("Wifi is connected")
+else:
+    raise RuntimeError("WiFi connection failed")
 
 
 # alarm
@@ -61,6 +65,7 @@ def read_lux_apds9999():
     # Convert to lux using the sensor's scale factor 0.180 lux/count
     return raw * 0.180
 
+
 def check_conditions(temp, hum, lux):
     """Return a list of readings that are out of range."""
     alerts = []
@@ -86,9 +91,6 @@ def connect_mqtt():
             sleep(5)
 
 
-if not connect_wifi():
-    raise RuntimeError("WiFi connection failed")
-
 client = connect_mqtt()
 
 alarm(0)  # shutdown after loop is done
@@ -109,7 +111,7 @@ while True:
         dht_payload = json.dumps({"temperature": temp, "humidity": hum})
         lux_payload = json.dumps({"lux": round(lux, 1)})
 
-        try: 
+        try:
             client.publish(TOPIC_DHT, dht_payload)
             client.publish(TOPIC_LUX, lux_payload)
         except OSError as e:
