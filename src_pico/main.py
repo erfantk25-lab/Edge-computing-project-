@@ -48,6 +48,8 @@ lcd.putstr("Starting up...")
 
 if connect_wifi():
     print("Wifi is connected")
+    lcd.move_to(0, 1)
+    lcd.putstr("WiFi: OK")
 else:
     raise RuntimeError("WiFi connection failed")
 
