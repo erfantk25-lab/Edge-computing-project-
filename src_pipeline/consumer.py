@@ -1,29 +1,39 @@
 import paho.mqtt.client as mqtt
 import json
+import traceback
 from utils.connect_postgres import query_db
 
 
 def on_message(client, userdata, message):
-    payload = message.payload.decode()
-    data = json.loads(payload)
+    try:
+        payload = message.payload.decode()
+        data = json.loads(payload)
 
-    temperature = float(data["temperature"])
-    humidity = float(data["humidity"])
+        temperature = float(data["temperature"])
+        humidity = float(data["humidity"])
 
-    # TODO: Add light sensor data when the light sensor is implemented.
-    # light = float(data["light"])
+        # TODO: Add light sensor data when the light sensor is implemented.
+        # light = float(data["light"])
 
-    query_db(
-        """
-        INSERT INTO sensor_readings
-            (time, temperature, humidity)
-        VALUES (NOW(), %s, %s)
-        """,
-        (temperature, humidity),
-    )
+        query_db(
+            """
+            INSERT INTO sensor_readings
+                (time, temperature, humidity)
+            VALUES (NOW(), %s, %s)
+            """,
+            (temperature, humidity),
+        )
 
-    print("Temperature:", temperature)
-    print("Humidity:", humidity)
+        print("Temperature:", temperature, flush=True)
+        print("Humidity:", humidity, flush=True)
+    except Exception as e:
+        print(f"Error processing message on topic {message.topic}:", flush=True)
+        try:
+            print(f"Raw payload: {message.payload.decode()}", flush=True)
+        except Exception:
+            print(f"Raw payload (bytes): {message.payload}", flush=True)
+        print(f"Exception: {e}", flush=True)
+        traceback.print_exc()
 
 
 if __name__ == "__main__":
@@ -68,6 +78,6 @@ if __name__ == "__main__":
             print(f"Waiting for MQTT broker to start... ({e})")
             time.sleep(2)
 
-    client.subscribe("home/pico/dht11")
     client.on_message = on_message
+    client.subscribe("home/pico/dht11")
     client.loop_forever()
