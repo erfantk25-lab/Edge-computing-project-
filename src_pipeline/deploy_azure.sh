@@ -8,7 +8,7 @@ set -e
 # 1. Variables
 RESOURCE_GROUP="smartgrow-rg"
 LOCATION="francecentral"
-ACR_NAME="smartgrowacr$RANDOM"
+ACR_NAME="smartgrowacr31365"
 DB_SERVER_NAME="smartgrow-db-$RANDOM"
 DB_ADMIN_USER="sensordb_admin"
 DB_NAME="sensordb"
@@ -87,12 +87,25 @@ else
     az group create --name $RESOURCE_GROUP --location $LOCATION
 fi
 
-echo "=== 2. Creating Azure Container Registry (ACR) ==="
-az acr create --resource-group $RESOURCE_GROUP --name $ACR_NAME --location $LOCATION --sku Basic --admin-enabled true
+echo "=== 2. Verifying Azure Container Registry (ACR) ==="
+if ! az acr show --name $ACR_NAME > /dev/null 2>&1; then
+    echo "ERROR: ACR $ACR_NAME does not exist. Please create it or verify the name."
+    exit 1
+fi
+echo "ACR $ACR_NAME found."
 
-echo "=== 3. Building and Pushing Images to ACR ==="
-az acr build --registry $ACR_NAME --image mosquitto:latest -f src_pipeline/dockerfiles/mosquitto.dockerfile .
-az acr build --registry $ACR_NAME --image consumer:latest -f src_pipeline/dockerfiles/consumer.dockerfile .
+echo "=== 3. Verifying Images in ACR ==="
+if ! az acr repository show-tags --name $ACR_NAME --repository smartgrow-mosquitto | grep -q "latest"; then
+    echo "ERROR: Image smartgrow-mosquitto:latest not found in ACR."
+    echo "Please run src_pipeline/build_push_images.ps1 locally on Windows first."
+    exit 1
+fi
+if ! az acr repository show-tags --name $ACR_NAME --repository smartgrow-consumer | grep -q "latest"; then
+    echo "ERROR: Image smartgrow-consumer:latest not found in ACR."
+    echo "Please run src_pipeline/build_push_images.ps1 locally on Windows first."
+    exit 1
+fi
+echo "All required images found in ACR."
 
 echo "=== 4. Getting ACR Credentials ==="
 export ACR_USERNAME=$(az acr credential show --name $ACR_NAME --query "username" --output tsv)

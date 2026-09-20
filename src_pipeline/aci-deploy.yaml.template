@@ -5,7 +5,7 @@ properties:
   containers:
   - name: mosquitto
     properties:
-      image: ${ACR_NAME}.azurecr.io/mosquitto:latest
+      image: ${ACR_NAME}.azurecr.io/smartgrow-mosquitto:latest
       resources:
         requests:
           cpu: 0.5
@@ -20,7 +20,7 @@ properties:
         secureValue: ${MQTT_PASSWORD}
   - name: consumer
     properties:
-      image: ${ACR_NAME}.azurecr.io/consumer:latest
+      image: ${ACR_NAME}.azurecr.io/smartgrow-consumer:latest
       resources:
         requests:
           cpu: 0.5
