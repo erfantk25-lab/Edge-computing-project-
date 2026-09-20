@@ -1,3 +1,5 @@
+import os
+import time 
 import paho.mqtt.client as mqtt
 import json
 import traceback
@@ -69,8 +71,7 @@ def on_message(client, userdata, message):
 
 
 if __name__ == "__main__":
-    import os
-    import time
+    
     
     # Wait for DB to be ready
     db_ready = False
