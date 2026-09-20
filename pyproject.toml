@@ -8,6 +8,7 @@ dependencies = [
     "paho-mqtt>=2.1.0",
     "psycopg2-binary>=2.9.13",
     "python-dotenv>=1.2.3",
+    "requests>=2.34.2",
 ]
 [tool.uv]
 package = false
