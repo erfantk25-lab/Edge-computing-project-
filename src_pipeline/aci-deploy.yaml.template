@@ -1,6 +1,6 @@
 name: smartgrow-backend
 apiVersion: '2021-10-01'
-location: westeurope
+location: francecentral
 properties:
   containers:
   - name: mosquitto
