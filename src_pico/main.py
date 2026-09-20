@@ -14,7 +14,7 @@ TEMP_MAX = 30  # C
 TEMP_MIN = 5  # C
 HUM_MIN = 10  # %
 
-LUX_MIN = 2
+LUX_MIN = 10
 LUX_MAX = 50
 
 ADDR = 0x52  # 0x52 is a Deafult address which APDS-9999 answers on
