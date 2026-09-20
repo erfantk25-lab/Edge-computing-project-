@@ -17,6 +17,15 @@ def on_connect(client, userdata, flags, reason_code, properties):
     else:
         print("Connection failed:", reason_code)
 
+def notify_discord(alerts):
+    if not WEBHOOK or not alerts:
+        return
+    text = "Green house alarm!\n" + "\n".join(f"{a}" for a in alerts)
+    try:
+        requests.post(WEBHOOK, json={"content": text}, timeout=5)
+    except requests.RequestException as e:
+        print("Discord message failed:", e)
+
 def on_message(client, userdata, message):
     """Callback by paho-mqtt when a message is received. 
      
@@ -29,15 +38,6 @@ def on_message(client, userdata, message):
     
     payload = message.payload.decode()
     data = json.loads(payload)
-
-    def notify_discord(alerts):
-      if not WEBHOOK or not alerts:
-        return
-    text = "Green house alarm!\n" + "\n".join(f"• {a}" for a in alerts)
-    try:
-        requests.post(WEBHOOK, json={"content": text}, timeout=5)
-    except requests.RequestException as e:
-        print("Discord message failed:", e)
 
     if message.topic == "home/pico/dht11":
         temperature = float(data["temperature"])
