@@ -4,6 +4,7 @@ from time import sleep, sleep_ms
 from umqtt.simple import MQTTClient
 from wifi import connect_wifi
 import json
+from gpio_lcd import GpioLcd
 
 MQTT_BROKER = "192.168.0.101"
 TOPIC_DHT = b"home/pico/dht11"
@@ -13,8 +14,8 @@ TEMP_MAX = 30  # C
 TEMP_MIN = 5  # C
 HUM_MIN = 10  # %
 
-LUX_MIN = 100
-LUX_MAX = 30000
+LUX_MIN = 10
+LUX_MAX = 50
 
 ADDR = 0x52  # 0x52 is a Deafult address which APDS-9999 answers on
 i2c = I2C(
@@ -29,8 +30,26 @@ led = Pin(15, Pin.OUT)
 buzzer = PWM(Pin(14))
 buzzer.duty_u16(0)
 
+lcd = GpioLcd(
+    rs_pin=Pin(22),
+    enable_pin=Pin(21),
+    d4_pin=Pin(20),
+    d5_pin=Pin(19),
+    d6_pin=Pin(18),
+    d7_pin=Pin(17),
+    num_lines=2,
+    num_columns=16,
+)
+
+# Startup message to test screen right away
+lcd.clear()
+lcd.move_to(0, 0)
+lcd.putstr("Starting up...")
+
 if connect_wifi():
     print("Wifi is connected")
+    lcd.move_to(0, 1)
+    lcd.putstr("WiFi: OK")
 else:
     raise RuntimeError("WiFi connection failed")
 
