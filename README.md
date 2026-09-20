@@ -41,9 +41,12 @@ Pipeline flow: Edge sensing & alert → MQTT ingestion → TimescaleDB storage �
 
 ```
 ├── docs/
+│   ├── assets/                  # Images and screenshots for documentation
 │   └── way-of-working.md        # Agile process, branching, and PR rules
 ├── src_pico/
 │   ├── umqtt/simple.py          # MicroPython MQTT client
+│   ├── gpio_lcd.py              # LCD hardware driver (Bonus Feature)
+│   ├── lcd_api.py               # LCD API helper (Bonus Feature)
 │   ├── wifi_credentials.json    # Local network secrets (gitignored)
 │   ├── wifi.py                  # RP2 Wi-Fi initialization helper
 │   └── main.py                  # Measurement loop, alert logic & publisher
@@ -54,23 +57,26 @@ Pipeline flow: Edge sensing & alert → MQTT ingestion → TimescaleDB storage �
 │   │   └── connect_postgres.py  # Parameterized TimescaleDB client
 │   ├── consumer.py              # MQTT subscriber & database ingestion worker
 │   ├── docker-compose.yaml      # Mosquitto, TimescaleDB, consumer & Grafana
-│   ├── .env.example
+│   ├── mosquitto.conf           # MQTT broker configuration
 │   └── .env                     # Local secrets (gitignored)
 ├── .gitignore
+├── .micropico                   #gitignored
 ├── pyproject.toml
 ├── README.md
 └── uv.lock
 ```
 
-## Hardware & Bill of Materials (BOM)
+## 🛠️ Hardware & Bill of Materials (BOM)
 
 | Component | Pin / Interface | Role |
 | :--- | :--- | :--- |
 | **Raspberry Pi Pico W** | Microcontroller | Edge compute node & Wi-Fi MQTT publisher |
 | **DHT11 Sensor** | GPIO 16 | Temperature and relative humidity monitoring |
-| **LDR Photoresistor**| ADC Pin (GPIO 26) | Ambient light intensity tracking |
-| **I2C Display (LCD/OLED)** | I2C (SDA / SCL) | Real-time local status display (Bonus) |
+| **APDS-9999 Light Sensor**| I2C1 (SDA: 2, SCL: 3) | Ambient light intensity tracking (lux)|
+| **LCD Display (16x2)**  | GPIO (Pins 17-22) | Real-time local status display |
+| **10k Potentiometer** | LCD V0 Pin | Adjusts the physical contrast of the LCD screen |
 | **Active Buzzer & LED**| GPIO 14 (PWM) / GPIO 15 | Local threshold breach alarm (audio-visual) |
+| **Breadboard & Jumpers** | Physical Layout | Component routing and prototyping |
 
 ---
 ## Edge Features & Logic
