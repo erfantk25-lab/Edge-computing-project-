@@ -7,13 +7,17 @@ load_dotenv()
 POSTGRES_DB = os.getenv("POSTGRES_DB")
 POSTGRES_USER = os.getenv("POSTGRES_USER")
 POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-HOST = os.getenv("DB_HOST", "localhost") # Default to localhost if nothing else is set
+DB_HOST = os.getenv("DB_HOST", "localhost") 
+DB_PORT = os.getenv("DB_PORT", "5432")
+DB_SSLMODE = os.getenv("DB_SSLMODE", "prefer") # 'require' for Azure, 'prefer' allows local non-SSL
 
 DB_CONFIG = {
     "dbname": POSTGRES_DB,
     "user": POSTGRES_USER,
     "password": POSTGRES_PASSWORD,
-    "host": HOST,
+    "host": DB_HOST,
+    "port": DB_PORT,
+    "sslmode": DB_SSLMODE,
 }
 
 def query_db(sql: str, parameters: tuple | None = None):

@@ -1,8 +1,11 @@
 services:
   mosquitto:
     container_name: mosquitto
-    image: eclipse-mosquitto
-    command: mosquitto -c /dev/null -p 1883
+    build:
+      context: ..
+      dockerfile: src_pipeline/dockerfiles/mosquitto.dockerfile
+    env_file:
+      - .env
     ports:
       - "1883:1883"
 
@@ -13,6 +16,9 @@ services:
       dockerfile: src_pipeline/dockerfiles/consumer.dockerfile
     env_file:
       - .env
+    environment:
+      - MQTT_HOST=mosquitto
+      - DB_HOST=timescaledb
     depends_on:
       timescaledb:
         condition: service_healthy
@@ -31,7 +37,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - timescale_data:/var/lib/postgresql/data
+      - timescale_data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
