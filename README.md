@@ -1,19 +1,32 @@
 # πCo – Smart Plant Environmental Monitor (Edge IoT)
 
-An edge computing telemetry and alerting pipeline built with the Raspberry Pi Pico W. The device monitors climate and lighting conditions, evaluates environmental thresholds locally on edge, drives localized alarms, and streams readings to a containerized TimescaleDB and Grafana stack (deployable locally or to Azure).
+An edge computing telemetry and alerting pipeline built with the Raspberry Pi Pico W. The device monitors climate and lighting conditions, evaluates environmental thresholds locally on edge, drives localized alarms, and streams readings to a containerized TimescaleDB and Grafana stack. **It also features automated Discord alerts for remote monitoring.**
 
 ---
 
-## Architecture
+## 📸 Project Screenshots
+
+* **Hardware Setup:** <br>
+  ![Hardware](docs/assets/hardware.png)
+
+* **Wokwi Simulation:** <br>
+  ![Wokwi](docs/assets/wokwi.jpg)
+
+* **Discord Alert:** <br>
+  ![Discord](docs/assets/discord.jpg)
+
+---
+
+## 🏗️ Architecture & Pipeline
 
 ```text
-[ Pico W (DHT11, LDR, LCD/OLED, Buzzer/LED) ]
+[ Pico W (DHT11, APDS-9999 Light Sensor, LCD, Buzzer/LED) ]
                       │
                       ▼ (Wi-Fi / JSON MQTT)
              [ Mosquitto Broker ]
                       │
                       ▼
-              [ Python Consumer ]
+              [ Python Consumer ] ───► [ Discord Webhook Alerts ]
                       │
                       ▼
                 [ TimescaleDB ]
