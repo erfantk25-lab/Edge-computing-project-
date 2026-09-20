@@ -27,15 +27,26 @@ if ! az account show > /dev/null 2>&1; then
     exit 1
 fi
 
-# 3. Create Resource Group
-echo "=== Creating Resource Group: $RESOURCE_GROUP ==="
-az group create --name "$RESOURCE_GROUP" --location "$LOCATION" -o none
-echo "Resource Group created."
+# 3. Check/Create Resource Group
+echo "=== Checking Resource Group: $RESOURCE_GROUP ==="
+if az group show --name "$RESOURCE_GROUP" > /dev/null 2>&1; then
+    echo "Resource Group '$RESOURCE_GROUP' already exists. Reusing it."
+else
+    echo "Creating Resource Group: $RESOURCE_GROUP in $LOCATION..."
+    az group create --name "$RESOURCE_GROUP" --location "$LOCATION" -o none
+    echo "Resource Group created."
+fi
 
-# 4. Create Azure Container Registry (ACR)
-echo "=== Creating Azure Container Registry: $ACR_NAME ==="
-az acr create --resource-group "$RESOURCE_GROUP" --name "$ACR_NAME" --sku Basic --admin-enabled true -o none
-echo "ACR created."
+# 4. Check/Create Azure Container Registry (ACR)
+echo "=== Checking Azure Container Registry: $ACR_NAME ==="
+if az acr show --name "$ACR_NAME" > /dev/null 2>&1; then
+    echo "ACR '$ACR_NAME' already exists. Reusing it and ensuring admin is enabled."
+    az acr update -n "$ACR_NAME" --admin-enabled true -o none
+else
+    echo "Creating Azure Container Registry: $ACR_NAME in $LOCATION..."
+    az acr create --resource-group "$RESOURCE_GROUP" --name "$ACR_NAME" --sku Basic --admin-enabled true --location "$LOCATION" -o none
+    echo "ACR created."
+fi
 
 # 5. Build and Push Images using ACR Tasks
 echo "=== Building and Pushing Images to ACR ==="
