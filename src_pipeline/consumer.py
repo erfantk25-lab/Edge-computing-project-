@@ -46,6 +46,10 @@ def on_message(client, userdata, message):
         temperature = float(data["temperature"])
         humidity = float(data["humidity"])
 
+        latest["temperature"] = temperature
+        latest["humidity"] = humidity
+        notify_discord(data.get("alerts", []))
+
         # TODO: Add light sensor data when the light sensor is implemented.
         # light = float(data["light"])
 
