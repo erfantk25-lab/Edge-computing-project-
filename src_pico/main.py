@@ -136,7 +136,7 @@ while True:
 
         # Send temperature, humidity and lux data to MQTT-broker, and alerts
         dht_payload = json.dumps({"temperature": temp, "humidity": hum, "alerts": alerts})
-        lux_payload = json.dumps({"lux": round(lux, 1)})
+        lux_payload = json.dumps({"lux": round(lux, 1), "alerts": alerts})
 
         try:
             client.publish(TOPIC_DHT, dht_payload)
