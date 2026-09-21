@@ -6,7 +6,7 @@ from wifi import connect_wifi
 import json
 from gpio_lcd import GpioLcd
 
-MQTT_BROKER = "192.168.0.101"
+MQTT_BROKER = "10.77.232.100"
 TOPIC_DHT = b"home/pico/dht11"
 TOPIC_LUX = b"home/pico/lux"
 

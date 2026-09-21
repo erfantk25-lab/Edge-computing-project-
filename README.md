@@ -1,19 +1,32 @@
-# πCo – Smart Plant Environmental Monitor (Edge IoT)
+# πCo – Smart Grow Environmental Monitor (Edge IoT)
 
-An edge computing telemetry and alerting pipeline built with the Raspberry Pi Pico W. The device monitors climate and lighting conditions, evaluates environmental thresholds locally on edge, drives localized alarms, and streams readings to a containerized TimescaleDB and Grafana stack (deployable locally or to Azure).
+An edge computing telemetry and alerting pipeline built with the Raspberry Pi Pico W. The device monitors climate and lighting conditions, evaluates environmental thresholds locally on edge, drives localized alarms, and streams readings to a containerized TimescaleDB and Grafana stack. **It also features automated Discord alerts for remote monitoring.**
 
 ---
 
-## Architecture
+## 📸 Project Screenshots
+
+* **Hardware Setup:** <br>
+  ![Hardware](docs/assets/hardware.png)
+
+* **Wokwi Simulation:** <br>
+  ![Wokwi](docs/assets/wokwi.jpg)
+
+* **Discord Alert:** <br>
+  ![Discord](docs/assets/discord.jpg)
+
+---
+
+## 🏗️ Architecture & Pipeline
 
 ```text
-[ Pico W (DHT11, LDR, LCD/OLED, Buzzer/LED) ]
+[ Pico W (DHT11, APDS-9999 Light Sensor, LCD, Buzzer/LED) ]
                       │
                       ▼ (Wi-Fi / JSON MQTT)
              [ Mosquitto Broker ]
                       │
                       ▼
-              [ Python Consumer ]
+              [ Python Consumer ] ───► [ Discord Webhook Alerts ]
                       │
                       ▼
                 [ TimescaleDB ]
@@ -28,9 +41,12 @@ Pipeline flow: Edge sensing & alert → MQTT ingestion → TimescaleDB storage �
 
 ```
 ├── docs/
+│   ├── assets/                  # Images and screenshots for documentation
 │   └── way-of-working.md        # Agile process, branching, and PR rules
 ├── src_pico/
 │   ├── umqtt/simple.py          # MicroPython MQTT client
+│   ├── gpio_lcd.py              # LCD hardware driver (Bonus Feature)
+│   ├── lcd_api.py               # LCD API helper (Bonus Feature)
 │   ├── wifi_credentials.json    # Local network secrets (gitignored)
 │   ├── wifi.py                  # RP2 Wi-Fi initialization helper
 │   └── main.py                  # Measurement loop, alert logic & publisher
@@ -41,97 +57,73 @@ Pipeline flow: Edge sensing & alert → MQTT ingestion → TimescaleDB storage �
 │   │   └── connect_postgres.py  # Parameterized TimescaleDB client
 │   ├── consumer.py              # MQTT subscriber & database ingestion worker
 │   ├── docker-compose.yaml      # Mosquitto, TimescaleDB, consumer & Grafana
-│   ├── .env.example
+│   ├── mosquitto.conf           # MQTT broker configuration
 │   └── .env                     # Local secrets (gitignored)
 ├── .gitignore
+├── .micropico                   #gitignored
 ├── pyproject.toml
 ├── README.md
 └── uv.lock
 ```
 
-## Hardware & Bill of Materials (BOM)
+## 🛠️ Hardware & Bill of Materials (BOM)
 
 | Component | Pin / Interface | Role |
 | :--- | :--- | :--- |
 | **Raspberry Pi Pico W** | Microcontroller | Edge compute node & Wi-Fi MQTT publisher |
 | **DHT11 Sensor** | GPIO 16 | Temperature and relative humidity monitoring |
-| **LDR Photoresistor**| ADC Pin (GPIO 26) | Ambient light intensity tracking |
-| **I2C Display (LCD/OLED)** | I2C (SDA / SCL) | Real-time local status display (Bonus) |
+| **APDS-9999 Light Sensor**| I2C1 (SDA: 2, SCL: 3) | Ambient light intensity tracking (lux)|
+| **LCD Display (16x2)**  | GPIO (Pins 17-22) | Real-time local status display |
+| **10k Potentiometer** | LCD V0 Pin | Adjusts the physical contrast of the LCD screen |
 | **Active Buzzer & LED**| GPIO 14 (PWM) / GPIO 15 | Local threshold breach alarm (audio-visual) |
+| **Breadboard & Jumpers** | Physical Layout | Component routing and prototyping |
 
 ---
-## Edge Features & Logic
+## ⚡ Key Features
 
-* **Local Safety Validation:** Autonomous edge checks (`temp > 10°C` or `hum > 10%`) trigger a local buzzer routine and warning LED without network round-trip dependencies.
-* **Fail-Safe Telemetry:** Auto-reconnect routines handle intermittent Wi-Fi and MQTT broker outages.
-* **Wokwi Edge Simulation:** Circuit schematic and functional simulation available at [Wokwi Project](https://wokwi.com/projects/475319091061769217).
-
----
-
-## Quickstart
-
-### Prerequisites
-* [Docker & Docker Compose](https://docs.docker.com/get-docker/) installed and running.
-* [Raspberry Pi Pico W](https://www.raspberrypi.com/documentation/microcontrollers/raspberry-pi-pico.html) flashed with the latest MicroPython UF2 firmware.
-* VS Code with the **MicroPico** extension (or Thonny IDE).
+* **Autonomous Edge Safety:** Local edge checks (`temp > 30°C / < 5°C`, `hum < 10%`, or abnormal lux) immediately trigger a local buzzer routine and warning LED without waiting for network instructions.
+* **Remote Discord Alerts:** The Python consumer listens for alert flags from the MQTT payload and automatically dispatches a webhook message to Discord.
+* **Edge Monitoring (Bonus):** Live system status is displayed directly on the physical LCD screen.
+* **Fail-Safe Telemetry:** Built-in auto-reconnect routines handle intermittent Wi-Fi and MQTT broker outages smoothly (QoS 1 utilized).
 
 ---
 
-### 1. Launch Data Pipeline
+## 🌐 Wokwi Simulation
 
-1. **Configure Environment:**
-   ```bash
-   cd src_pipeline
-   cp .env.example .env
-   ```
+A digital twin of our hardware setup (circuit schematic and functional simulation) is available here:
+👉 **[View Wokwi Project](https://wokwi.com/projects/475319091061769217)**
 
-Open `.env` and configure your credentials according to the template in [`.env.example`](./src_pipeline/.env.example).
+![Wokwi Simulation](docs/assets/wokwi.jpg)
 
-**Start Services:**
+
+---
+
+## 🚀 Quickstart
+
+### 1. Launch the Data Pipeline
+Ensure Docker is installed and running on your host machine.
 
 ```bash
+cd src_pipeline
+cp .env.example .env
+```
+
+Edit your .env file to include your database credentials, Grafana passwords, and your DISCORD_WEBHOOK_URL. Then, spin up the stack:
+
+```Bash
 docker compose up -d --build
 ```
-
-* Mosquitto starts on port 1883.
-* TimescaleDB completes its healthcheck and exposes port 5432.
-* The Python consumer waits for healthy upstream services, auto-initializes the `sensor_readings` table, and subscribes to incoming messages.
-
-**Verify Pipeline:**
-
-```bash
-docker compose logs -f consumer
-```
-
----
+* The Python consumer will wait for TimescaleDB and Mosquitto to be healthy, auto-initialize the `sensor_readings` table, and begin listening for MQTT messages on port 1883.
 
 ### 2. Configure & Flash Pico W
+1. Create `src_pico/wifi_credentials.json` with your network `ssid` and `password`.
+2. In `src_pico/main.py`, set `MQTT_BROKER` to your computer's local LAN IP (currently set to `192.168.0.101`).
+3. Connect the Pico W, upload the `src_pico/` folder via the VS Code MicroPico extension (or Thonny), and run `main.py`.
 
-1. Create `src_pico/wifi_credentials.json` (gitignored) and add your local network credentials:
-   ```json
-   {
-     "ssid": "YOUR_WIFI_NAME",
-     "password": "YOUR_WIFI_PASSWORD"
-   }
-   ```
-2. In `src_pico/main.py`, set `MQTT_BROKER` to your Docker host IP (use your machine's local LAN IP, e.g., `192.168.1.X`, not `localhost`).
-3. Open the repository root in VS Code using the **MicroPico** extension, connect the Pico W via USB, and upload the `src_pico/` folder to the device.
-4. Run `main.py`. Telemetry will stream to Mosquitto, and the local buzzer/LED alarm will fire if thresholds are exceeded.
+### 3. View Live Data
+Access the dashboard at `http://localhost:3000` (Log in using the credentials in your `.env` file). The TimescaleDB data source and Grafana dashboards can be configured to show the live time-series data!
 
----
-
-
-## Observability & Dashboard
-
-Access the live dashboard at `http://localhost:3000` (Log in using the `GRAFANA_USER` and `GRAFANA_PASSWORD` defined in your `.env` file).
-*(The TimescaleDB data source and dashboards are auto-provisioned).*
-
-* **Tracked Metrics:** Temperature (°C), Humidity (%), Light Level, and Alert Breaches.
-* **Visualizations:** Real-time time-series charts, environment gauges, and alert indicators.
-
----
-
-## Contributors
+## 👥 Contributors
 
 * **[Lilit Ajoyan](https://github.com/LAjoyan)**
 * **[Josefin Lesley](https://github.com/Josefin3647)**
