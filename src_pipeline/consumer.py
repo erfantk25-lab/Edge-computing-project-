@@ -39,10 +39,12 @@ def notify_discord(alerts):
 def on_message(client, userdata, message):
     """Callback by paho-mqtt when a message is received. 
      
-    Decodes the JSON payload and saves the values to the database
+    Decodes the JSON payload and saves the values to the database. If the 
+    payload's "alerts" list in non-empty, a Discord webhook triggers a notification. 
+
     Handles topics:
-    - dht11
-    - lux
+    - home/pico/dht11
+    - home/pico/lux
 
     """
     
@@ -65,9 +67,6 @@ def on_message(client, userdata, message):
         latest["humidity"] = humidity
         notify_discord(data.get("alerts", []))
 
-
-    
-
     elif message.topic == "home/pico/lux":
         lux = float(data["lux"])
 
@@ -80,6 +79,7 @@ def on_message(client, userdata, message):
         )
         print("Lux:", lux)
         latest["lux"] = lux
+        notify_discord(data.get("alerts", []))
 
 
 if __name__ == "__main__":
