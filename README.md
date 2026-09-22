@@ -9,8 +9,8 @@ An edge computing telemetry and alerting pipeline built with the Raspberry Pi Pi
 * **Hardware Setup:** <br>
   ![Hardware](docs/assets/hardware.png)
 
-* **Wokwi Simulation:** <br>
-  ![Wokwi](docs/assets/wokwi.jpg)
+* **Grafana dashboard:** <br>
+  ![Grafana](docs/assets/grafana.jpg)
 
 * **Discord Alert:** <br>
   ![Discord](docs/assets/discord.jpg)
