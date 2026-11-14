@@ -1,5 +1,10 @@
 # πCo – Smart Grow Environmental Monitor (Edge IoT)
 
+<div align="center">
+
+<img src="docs/assets/erfan-pico-edge-iot-banner.svg" alt="πCo Smart Grow — Erfan Tahmasebi project banner" width="100%"/>
+
+</div>
 An edge computing telemetry and alerting pipeline built with the Raspberry Pi Pico W. The device monitors climate and lighting conditions, evaluates environmental thresholds locally on edge, drives localized alarms, and streams readings to a containerized TimescaleDB and Grafana stack. **It also features automated Discord alerts for remote monitoring.**
 
 ---
