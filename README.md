@@ -2,19 +2,6 @@
 
 An edge computing telemetry and alerting pipeline built with the Raspberry Pi Pico W. The device monitors climate and lighting conditions, evaluates environmental thresholds locally on edge, drives localized alarms, and streams readings to a containerized TimescaleDB and Grafana stack. **It also features automated Discord alerts for remote monitoring.**
 
-## 🧰 Technology Stack
-
-![MicroPython](https://img.shields.io/badge/MicroPython-071B31?style=for-the-badge&logo=python&logoColor=FFD43B)
-![Raspberry Pi Pico W](https://img.shields.io/badge/Raspberry_Pi_Pico_W-071B31?style=for-the-badge&logo=raspberrypi&logoColor=C51A4A)
-![MQTT](https://img.shields.io/badge/MQTT-071B31?style=for-the-badge&logo=mqtt&logoColor=660066)
-![Mosquitto](https://img.shields.io/badge/Mosquitto-071B31?style=for-the-badge&logo=eclipse-mosquitto&logoColor=3C5280)
-![Docker Compose](https://img.shields.io/badge/Docker_Compose-071B31?style=for-the-badge&logo=docker&logoColor=2496ED)
-![TimescaleDB](https://img.shields.io/badge/TimescaleDB-071B31?style=for-the-badge&logo=timescale&logoColor=FDB515)
-![Grafana](https://img.shields.io/badge/Grafana-071B31?style=for-the-badge&logo=grafana&logoColor=F46800)
-![Discord Webhooks](https://img.shields.io/badge/Discord_Webhooks-071B31?style=for-the-badge&logo=discord&logoColor=5865F2)
-
----
-
 ## 📸 Project Screenshots
 
 * **Hardware Setup:** <br>
