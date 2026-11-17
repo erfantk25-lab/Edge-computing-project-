@@ -19,21 +19,9 @@ An edge computing telemetry and alerting pipeline built with the Raspberry Pi Pi
 
 ## 🏗️ Architecture & Pipeline
 
-```text
-[ Pico W (DHT11, APDS-9999 Light Sensor, LCD, Buzzer/LED) ]
-                      │
-                      ▼ (Wi-Fi / JSON MQTT)
-             [ Mosquitto Broker ]
-                      │
-                      ▼
-              [ Python Consumer ] ───► [ Discord Webhook Alerts ]
-                      │
-                      ▼
-                [ TimescaleDB ]
-                      │
-                      ▼
-              [ Grafana Dashboard ]
-```
+<div align="center">
+<img src="docs/assets/architecture.svg" width="100%" alt="Smart Grow edge IoT architecture: Pico W sensors and local threshold logic, MQTT broker, Python consumer, TimescaleDB, Grafana and Discord alerts" />
+</div>
 
 Pipeline flow: Edge sensing & alert → MQTT ingestion → TimescaleDB storage → Grafana visualization.
 
