@@ -2,7 +2,19 @@
 
 An edge computing telemetry and alerting pipeline built with the Raspberry Pi Pico W. The device monitors climate and lighting conditions, evaluates environmental thresholds locally on edge, drives localized alarms, and streams readings to a containerized TimescaleDB and Grafana stack. **It also features automated Discord alerts for remote monitoring.**
 
----
+## 🧰 Technology Stack
+
+<div align="center">
+
+  <a href="https://micropython.org/" title="MicroPython"><img src="https://cdn.simpleicons.org/python/3776AB" alt="MicroPython" height="42"></a>
+  <a href="https://www.raspberrypi.com/products/raspberry-pi-pico/" title="Raspberry Pi Pico W"><img src="https://cdn.simpleicons.org/raspberrypi/C51A4A" alt="Raspberry Pi Pico W" height="42"></a>
+  <a href="https://mqtt.org/" title="MQTT"><img src="https://cdn.simpleicons.org/mqtt/660066" alt="MQTT" height="42"></a>
+  <a href="https://docs.docker.com/compose/" title="Docker Compose"><img src="https://cdn.simpleicons.org/docker/2496ED" alt="Docker Compose" height="42"></a>
+  <a href="https://www.timescale.com/" title="TimescaleDB"><img src="https://cdn.simpleicons.org/timescale/FDB515" alt="TimescaleDB" height="42"></a>
+  <a href="https://grafana.com/" title="Grafana"><img src="https://cdn.simpleicons.org/grafana/F46800" alt="Grafana" height="42"></a>
+  <a href="https://discord.com/developers/docs/resources/webhook" title="Discord Webhooks"><img src="https://cdn.simpleicons.org/discord/5865F2" alt="Discord Webhooks" height="42"></a>
+
+</div>
 
 ## 📸 Project Screenshots
 
@@ -19,21 +31,9 @@ An edge computing telemetry and alerting pipeline built with the Raspberry Pi Pi
 
 ## 🏗️ Architecture & Pipeline
 
-```text
-[ Pico W (DHT11, APDS-9999 Light Sensor, LCD, Buzzer/LED) ]
-                      │
-                      ▼ (Wi-Fi / JSON MQTT)
-             [ Mosquitto Broker ]
-                      │
-                      ▼
-              [ Python Consumer ] ───► [ Discord Webhook Alerts ]
-                      │
-                      ▼
-                [ TimescaleDB ]
-                      │
-                      ▼
-              [ Grafana Dashboard ]
-```
+<div align="center">
+<img src="docs/assets/architecture.svg" width="100%" alt="Smart Grow edge IoT architecture: Pico W sensors and local threshold logic, MQTT broker, Python consumer, TimescaleDB, Grafana and Discord alerts" />
+</div>
 
 Pipeline flow: Edge sensing & alert → MQTT ingestion → TimescaleDB storage → Grafana visualization.
 
